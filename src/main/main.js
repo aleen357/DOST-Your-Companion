@@ -1,5 +1,10 @@
 const { app, BrowserWindow, ipcMain, nativeImage, screen, Tray, Menu } = require('electron');
 const path = require('node:path');
+const { questions } = require('../shared/questions');
+const { createGuestStore } = require('./guest-store');
+const { addScore, choosePersona } = require('./persona');
+const { selectLocalPack } = require('./message-selection');
+const { getPersona } = require('../shared/personas');
 
 app.setName('DOST');
 
@@ -7,6 +12,96 @@ let mainWindow;
 let reminderWindow;
 let tray;
 let isQuitting = false;
+let guestStore;
+let dataRecoveryNotice = false;
+const isDemo = process.argv.includes('--demo');
+const resetGuestOnLaunch = process.argv.includes('--reset-guest');
+const incubationWaitMs = isDemo ? 30_000 : 24 * 60 * 60 * 1000;
+
+function getIncubationState() {
+  const guest = guestStore.get();
+  const profile = guest.persona ? getPersona(guest.persona) : null;
+  const now = Date.now();
+  const sessionQuestions = questions.filter((question) => question.session === guest.sessionIndex);
+  const question = sessionQuestions.find((item) => !guest.answers[item.id]) || null;
+  return {
+    recovered: dataRecoveryNotice,
+    demo: isDemo,
+    sessionIndex: guest.sessionIndex,
+    completedSessions: guest.completedSessions.length,
+    completedQuestions: Object.keys(guest.answers).length,
+    totalQuestions: questions.length,
+    canConnect: guest.sessionIndex < 3 && (!guest.connectAvailableAt || now >= guest.connectAvailableAt),
+    waitRemainingMs: guest.connectAvailableAt ? Math.max(0, guest.connectAvailableAt - now) : 0,
+    question: question ? {
+      id: question.id,
+      group: question.group,
+      type: question.type,
+      prompt: question.prompt,
+      options: question.options?.map(({ id, label }) => ({ id, label })) || []
+    } : null,
+    hatched: Boolean(guest.persona),
+    persona: guest.persona,
+    personaConfig: profile ? {
+      id: profile.id,
+      name: profile.name,
+      label: profile.label,
+      theme: profile.theme,
+      introduction: profile.introduction,
+      palette: profile.palette
+    } : null,
+    scores: guest.personaScores,
+    messagePack: guest.messagePack
+  };
+}
+
+ipcMain.handle('dost:get-incubation-state', () => getIncubationState());
+ipcMain.handle('dost:reset-incubation', async () => {
+  await guestStore.reset();
+  dataRecoveryNotice = false;
+  return getIncubationState();
+});
+ipcMain.handle('dost:submit-answer', async (_event, { questionId, answer }) => {
+  if (typeof questionId !== 'string' || !answer || typeof answer !== 'object') throw new Error('Invalid answer');
+  const guest = guestStore.get();
+  if (guest.persona || guest.sessionIndex >= 3 || (guest.connectAvailableAt && Date.now() < guest.connectAvailableAt)) {
+    throw new Error('Connect is not available yet');
+  }
+  const question = questions.find((item) => item.id === questionId && item.session === guest.sessionIndex);
+  if (!question || guest.answers[questionId]) throw new Error('Question is not available');
+
+  let selectedOption;
+  let text;
+  if (question.type === 'choice') {
+    selectedOption = question.options.find((option) => option.id === answer.optionId);
+    if (!selectedOption) throw new Error('Choose one of the available answers');
+  } else {
+    text = typeof answer.text === 'string' ? answer.text.trim().slice(0, 240) : '';
+    if (!text) throw new Error('Write a short answer to continue');
+  }
+
+  await guestStore.update((draft) => {
+    draft.answers[question.id] = question.type === 'choice'
+      ? { type: 'choice', optionId: selectedOption.id, label: selectedOption.label }
+      : { type: 'text', text };
+    if (selectedOption) addScore(draft.personaScores, selectedOption.scores);
+
+    const questionsInSession = questions.filter((item) => item.session === draft.sessionIndex);
+    const sessionDone = questionsInSession.every((item) => draft.answers[item.id]);
+    if (sessionDone) {
+      draft.completedSessions.push(Date.now());
+      draft.sessionIndex += 1;
+      if (draft.sessionIndex < 3) draft.connectAvailableAt = Date.now() + incubationWaitMs;
+      else {
+        draft.connectAvailableAt = null;
+        draft.persona = choosePersona(draft.personaScores);
+        draft.messagePack = selectLocalPack(draft.persona, draft.answers);
+        draft.hatchedAt = Date.now();
+      }
+    }
+  });
+  return getIncubationState();
+});
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
@@ -111,9 +206,24 @@ ipcMain.on('dost:dismiss-reminder', (_event, action) => {
 });
 
 app.whenReady().then(() => {
-  createTray();
-  createMainWindow();
-  app.on('activate', () => showMainWindow());
+  guestStore = createGuestStore(app.getPath('userData'));
+  guestStore.load().then(({ recovered }) => {
+    dataRecoveryNotice = recovered;
+    if (resetGuestOnLaunch) {
+      return guestStore.reset().then(() => {
+        dataRecoveryNotice = false;
+        createTray();
+        createMainWindow();
+        app.on('activate', () => showMainWindow());
+      });
+    }
+    createTray();
+    createMainWindow();
+    app.on('activate', () => showMainWindow());
+  }).catch((error) => {
+    console.error('Could not initialize guest data:', error);
+    app.quit();
+  });
 });
 
 app.on('before-quit', () => {

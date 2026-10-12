@@ -53,6 +53,7 @@ Source: `scope.md > The Core Loop` and `The POC Boundary`.
 - The 15 questions use a mix of selectable and typed responses. Each session must be fully answered before it counts; incomplete answers do not complete the session.
 - Selectable answers contribute persona points and can select prepared messages locally. Typed answers stay in the guest's local context, are not sent to any model, and do not receive an immediate reply.
 - Guest progress and answers remain available across the three incubation visits.
+- **Start over** asks for confirmation, then clears all saved guest progress and returns to the fresh egg.
 
 ### Persona and hatching
 
@@ -128,5 +129,5 @@ The question bank could grow beyond the 15-question proof set, and users could c
 
 ## Open Questions
 
-- The exact 15 question wordings and score mapping must be finalized before implementation; questions should remain light and non-sensitive.
-- The exact demo incubation wait is selected in the technical plan; normal waits remain 24 hours.
+- The 15 light question wordings, response options, and score mapping are implemented in `src/shared/questions.js`; typed answers stay local and do not affect persona scoring.
+- Demo incubation uses a 30-second wait between sessions; normal waits remain 24 hours.

@@ -109,13 +109,13 @@ The guest is one local record; there is no account or remote database.
 |---|---|---|
 | `schemaVersion`, `guestId` | Local format version and random guest identifier | Created on first launch; used to validate and identify this one local record. |
 | `answers` | Question IDs, answer type, selected option or short typed text | Written after each answer; reloaded if the app closes during incubation. |
-| `sessionIndex`, `sessionCompletedAt`, `connectAvailableAt` | Session progress and next Connect time | Updated only after all five answers in a session; 24 hours normally or 30 seconds in demo mode. |
-| `personaScores`, `persona` | Chill/bossy totals and final selected type | Scores update from options; persona is selected once after answer 15 and then remains stable. |
+| `sessionIndex`, `completedSessions`, `connectAvailableAt` | Session progress and next Connect time | Updated only after all five answers in a session; 24 hours normally or 30 seconds in demo mode. |
+| `personaScores`, `persona` | Totals keyed by persona ID and the final selected type | Scores update from options; the highest score wins, with a random tie-break. The selected persona remains stable after answer 15. |
 | `messagePack` | Prepared local messages selected for this guest by persona and structured choice categories | Selected after scoring and reused offline; typed answers are not used in prompts or sent to a model. |
 | `demoGenerationConsent`, `demoMessagePack` | Whether user opted into a fictional AI sample preview and its validated result | Stored separately from the real guest pack; never used as personalized reminders. |
 | `nextReminderAt`, `followUpState`, `lastSuggestionId` | Reminder schedule and response cycle | Updated on overlay display/dismissal; persisted so a restart resumes the remaining interval and follow-up. |
 
-`messagePack` contains bounded arrays for break ideas, encouragement, original wisdom-style lines, and jokes. Do not persist API request logs. The user can reset local progress through a tray or main-window reset action; deleting local data deletes the guest and preview pack.
+`messagePack` contains bounded arrays for break ideas, encouragement, original wisdom-style lines, and jokes. Do not persist API request logs. **Start over** asks for confirmation, then replaces the local record with a new guest, clearing answers, persona, and saved message packs.
 
 Data flow: UI answer → preload bridge → main process validates and scores → local JSON file. Main process selects the guest's prepared message pack using persona and choice categories. If the user opts into the demo preview, the main process sends only a built-in fictional prompt to Gemini → validates JSON response → saves a separate preview locally. The reminder clock reads the guest's local pack → overlay displays a selected item → OK/cross updates saved follow-up state.
 
@@ -149,7 +149,7 @@ Dost/
 │   │   └── slime.js             # isolated character art, animation states added last
 │   └── shared/
 │       ├── questions.js         # 15 light questions and scoring metadata
-│       ├── fallback-messages.js # prepared offline packs by persona
+│       ├── personas.js          # persona identity, palette, message packs, and tone
 │       └── message-schema.js    # shared source shape and content limits
 ├── devpost/                     # scope, PRD, spec, and review companions
 └── ...                          # generated dependencies/build output omitted
@@ -194,6 +194,7 @@ There is no required hosted database, analytics service, login, or hosting accou
 - **Learner chose Windows-only and Electron.** Plain JavaScript/HTML/CSS keep the first build in one familiar web language; larger app size accepted for accessible implementation and window controls.
 - **Learner chose tray residency.** Closing the main window hides Dost, preserving the timer; Quit stops the process.
 - **Learner chose local-only guest persistence.** No login, server database, or account linking in this POC.
+- **Persona content is data-driven.** A shared persona catalog owns each persona's ID, presentation, palette, message pack, and personalized variants. Scoring and character rendering use catalog IDs; the guest store migrates its score fields when the catalog schema changes.
 - **Learner chose interval-based reminders.** Count time while the app runs, with a two-hour normal interval and two-minute demo interval. No input, app, or content monitoring.
 - **Learner chose a local demo AI preview with fictional data.** A built-in fictional profile goes to the unpaid Gemini API only after explicit consent; actual guest answers never leave the PC. Dost uses a locally selected message pack. This preserves a visible AI demo while avoiding third-party processing of user data.
 - **Learner asked that questions not be too personal.** Questions focus on light lifestyle habits, occupation/work type, ideals, personality, and hurdles. The AI preview disclosure states that only fictional sample data is sent; actual answers stay local.
@@ -201,7 +202,7 @@ There is no required hosted database, analytics service, login, or hosting accou
 
 ### Open before or during build
 
-- `prd.md > Open Questions`: prepare the exact 15 light question wordings and selectable option-to-score mappings before connecting the question flow.
-- The exact demo incubation wait is not yet learner-selected; this spec proposes 30 seconds between sessions to keep the journey recordable. Normal wait remains 24 hours.
+- The exact 15 light question wordings and selectable option-to-score mappings are implemented in `src/shared/questions.js` and used by the incubation flow.
+- Demo mode uses a 30-second incubation wait between sessions; normal wait remains 24 hours.
 - Verify current stable Electron, Node LTS compatibility, Gemini Flash model availability, and free-tier limits when scaffolding. Do not let the API be required for the app to run.
 - Confirm the hatching disclosure names Google, describes the fictional data sent and free-tier data use/human review, says actual answers stay local, and offers **Skip AI preview** without pressure.

@@ -19,12 +19,12 @@ Build mode: learn
   Learner check: Open DOST, switch to another app, show the companion, and try OK and cross. Tell me what feels clear or awkward about its size, placement, character art, and actions.
   Commit: `Build DOST cross-app companion overlay`
 
-- [ ] **2. The egg hatches into a locally personalized DOST**
+- [x] **2. The egg hatches into a locally personalized DOST**
   Becomes usable: A guest can complete three five-question sessions, return after the waiting periods, and hatch a chill or bossy DOST whose prepared reminder pack is chosen locally.
   Why now: This delivers the incubation idea and its personalization kernel before the automatic reminder cycle is added. Feedback from the first overlay can still shape the shared visual language.
   PRD ref: `prd.md > The Core Journey` (steps 1–4), `prd.md > Features and Behavior > Guest incubation and answers`, `prd.md > Features and Behavior > Persona and hatching`, and `prd.md > States and Boundaries`
   Spec ref: `spec.md > Components > Incubation window`, `spec.md > Components > Persona and local message selection`, `spec.md > Components > Local guest store`, `spec.md > Data Model`, `spec.md > Important Failure Modes`, and `spec.md > File Structure`
-  Build: Add a versioned local guest JSON store and recoverable new-guest state. Write 15 light questions with selectable score mappings and a few typed responses. Implement one-question-at-a-time sessions, mandatory completion, 24-hour normal and 30-second demo waits, +2 chill/+3 bossy/random +2 scoring and random tie-break, progress display, hatch introduction, and locally selected prepared message packs. Keep local selection behind a small source boundary using the shared message schema; don't add a general AI/provider framework.
+  Build: Add a versioned local guest JSON store and recoverable new-guest state. Write the 15 light questions in `src/shared/questions.js` with selectable score mappings and a few typed responses. Implement one-question-at-a-time sessions, mandatory completion, 24-hour normal and 30-second demo waits (`npm run start:demo`), +2 chill/+3 bossy/random +2 scoring and random tie-break, progress display, hatch introduction, and locally selected prepared message packs. Keep local selection behind a small source boundary using the shared message schema; don't add a general AI/provider framework.
   Verify (mechanical): Run the app in demo mode; complete all three sessions, confirm the wait blocks Connect between sessions, close and reopen during incubation to confirm progress persists, and finish all 15 answers to see the expected score-selected persona and its local messages. Confirm a malformed or absent local file recovers to a usable guest screen.
   Learner check: Complete the short incubation journey in the app. Check that the questions feel light, the scoring/hatch result makes sense, and the local messages fit the persona; point out anything you would rewrite.
   Commit: `Add DOST incubation and local persona`
@@ -82,6 +82,8 @@ Activity mode: [complete after the build]
 
 ## Revisions
 
+- Centralized persona identity, palette, message packs, and tailored variants in a shared catalog — this keeps the current two personas together and lets scoring and the slime renderer resolve persona IDs without assuming only chill and bossy exist.
+- Added a confirmed **Start over** action that clears local selections and restores the fresh-egg state; a one-time `--reset-guest` launch flag resets the current demo record.
 - Added a small shared message-source boundary — the learner wants the architecture to leave room for a future local/private model; the current proof still uses local reminder selection and an optional, isolated fictional Gemini preview.
 - Removed swipe dismissal for the Windows desktop flow and fixed the button click issue by removing pointer capture from the overlay card — hands-on review found OK and cross were not responding; pointer capture retargeted pointerup/click events away from the buttons. The learner retested and confirmed OK, cross, overlay, and tray behavior work.
 - Moved DOST character motion and expressions to a final dedicated slice — the learner wants to add character animation at the end, with the renderer kept modular for that work.

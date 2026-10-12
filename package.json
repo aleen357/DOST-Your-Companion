@@ -6,7 +6,8 @@
   "description": "A small desktop companion for helpful breaks.",
   "main": "src/main/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "start:demo": "electron . --demo"
   },
   "devDependencies": {
     "electron": "^44.0.0"
