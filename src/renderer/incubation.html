@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'">
+  <title>DOST</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="incubation-page">
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">d</span><span>DOST</span></div>
+      <span class="stage-pill"><span class="status-dot"></span> A little companion for your day</span>
+    </header>
+
+    <section class="incubation-card" aria-labelledby="main-title">
+      <p class="eyebrow">A small pause, when you need one</p>
+      <h1 id="main-title">Good things grow<br>one moment at a time.</h1>
+      <p class="intro">Your DOST is getting ready to meet you.</p>
+
+      <div class="egg-stage" aria-label="A softly glowing egg">
+        <div class="halo"></div>
+        <div class="egg"><span class="egg-shine"></span><span class="egg-speckle one"></span><span class="egg-speckle two"></span></div>
+        <span class="sparkle sparkle-one" aria-hidden="true">✦</span>
+        <span class="sparkle sparkle-two" aria-hidden="true">✧</span>
+        <span class="sparkle sparkle-three" aria-hidden="true">·</span>
+      </div>
+
+      <div class="effort-row"><span>Incubation begins here</span><span>0 of 3 visits</span></div>
+      <div class="effort-track" role="progressbar" aria-label="Incubation progress" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0"><span></span></div>
+      <div class="card-footer">
+        <p>For now, meet your little desk friend.</p>
+        <button class="primary-button" id="preview-button" type="button"><span aria-hidden="true">✦</span> Show companion preview</button>
+      </div>
+      <p class="prototype-note" id="feedback" role="status">This preview opens above your other windows. The incubation journey is coming next.</p>
+    </section>
+
+    <footer class="page-footer"><span>Made for small breaks and kinder workdays.</span><span class="footer-heart" aria-hidden="true">♥</span></footer>
+  </main>
+  <script src="incubation.js"></script>
+</body>
+</html>

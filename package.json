@@ -1,0 +1,14 @@
+{
+  "name": "dost",
+  "productName": "DOST",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A small desktop companion for helpful breaks.",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^44.0.0"
+  }
+}

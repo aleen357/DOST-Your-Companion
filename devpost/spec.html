@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10172c">
+  <title>Dost — Technical Blueprint</title>
+  <style>
+    :root{color-scheme:dark;--bg:#10172c;--panel:#19233e;--panel2:#202d4d;--line:#344365;--ink:#edf3ff;--muted:#adbad5;--blue:#87b6ff;--mint:#86e4bd;--coral:#ff9c80;--gold:#ffd582}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#263962 0,transparent 36rem),var(--bg);color:var(--ink);font:16px/1.58 "Segoe UI",system-ui,sans-serif}
+    main{max-width:1080px;margin:0 auto;padding:34px 22px 72px}a{color:#a8caff}header{padding:18px 0 24px}header p,.muted{color:var(--muted)}h1{font-size:clamp(2.3rem,6vw,4.2rem);line-height:1;margin:.25em 0}h2{margin:0 0 14px;font-size:1.4rem}h3{margin:.2em 0 .5em;font-size:1.02rem}section{margin:24px 0;padding:24px;border:1px solid var(--line);border-radius:20px;background:#161f36e8;box-shadow:0 14px 42px #05091455}.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-weight:700;font-size:.75rem;color:var(--blue)}.tag{display:inline-block;border:1px solid #536587;border-radius:999px;padding:3px 10px;color:var(--muted);font-size:.82rem}.lead{max-width:760px;font-size:1.12rem;color:#d6e2fa}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.card{padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}.card p{margin:.5em 0 0;color:var(--muted)}.choices{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.choices button{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid #536587;border-radius:999px;padding:8px 14px;cursor:pointer}.choices button[aria-pressed=true]{background:#304b78;border-color:var(--blue);box-shadow:0 0 0 2px #87b6ff30}.step-panel{min-height:132px;padding:19px;border-radius:14px;background:linear-gradient(125deg,#24385d,#1c2845)}.step-panel p{margin:0;color:#d6e2fa}.step-label{color:var(--gold);font-weight:700}.diagram{width:100%;height:auto;display:block;background:#111a30;border-radius:14px;padding:12px}.diagram text{font:14px "Segoe UI",sans-serif;fill:#edf3ff}.diagram .sub{font-size:11px;fill:#b7c4df}.diagram .box{fill:#202e4e;stroke:#52678e;stroke-width:1.5}.diagram .outside{fill:#1e463e;stroke:#67cba3}.diagram .edge{stroke:#9bbcff;stroke-width:2;fill:none;marker-end:url(#arrow)}.diagram .optional{stroke:#ffd582;stroke-dasharray:6 5}.key{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:var(--blue)}.dot.opt{background:var(--gold)}.files{font: .94rem/1.58 ui-monospace,Consolas,monospace;white-space:pre;overflow:auto;color:#dae6ff;background:#0e1527;padding:17px;border-radius:12px}.callout{border-left:3px solid var(--gold);padding:8px 14px;color:#dce6fa;background:#252e45}.persona{display:flex;gap:12px;align-items:center}.blob{width:30px;height:25px;border-radius:55% 48% 45% 52%;display:inline-block}.blob.green{background:var(--mint);box-shadow:0 5px 0 #519c7a}.blob.coral{background:var(--coral);box-shadow:0 5px 0 #b85a4d}footer{color:var(--muted);padding:15px 4px}
+    @media(max-width:640px){main{padding:20px 13px 44px}section{padding:18px}.diagram text{font-size:12px}.diagram .sub{font-size:9px}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">Technical blueprint · Windows proof of concept</div>
+    <h1>Dost</h1>
+    <p class="lead">A guest answers 15 light questions, Dost hatches with a persona-shaped message pack, then a small animated companion appears over other work on a running-time schedule.</p>
+    <span class="tag">Approved spec</span> <a href="spec.md">Read the canonical spec</a>
+  </header>
+
+  <section>
+    <div class="eyebrow">The system at a glance</div>
+    <h2>What talks to what?</h2>
+    <svg class="diagram" viewBox="0 0 960 350" role="img" aria-labelledby="diag-title diag-desc">
+      <title id="diag-title">Dost app architecture and data flow</title><desc id="diag-desc">The incubation and overlay windows use a preload bridge to reach Electron's main process. The main process controls the tray, timer, local guest JSON file, and optional Gemini generation after consent.</desc>
+      <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#9bbcff"/></marker></defs>
+      <rect class="box" x="25" y="36" width="220" height="92" rx="14"/><text x="45" y="67">Incubation window</text><text class="sub" x="45" y="91">egg · questions · consent · hatch</text>
+      <rect class="box" x="25" y="220" width="220" height="82" rx="14"/><text x="45" y="251">Reminder overlay</text><text class="sub" x="45" y="275">slime · suggestion · actions</text>
+      <rect class="box" x="310" y="122" width="175" height="90" rx="14"/><text x="332" y="153">Preload bridge</text><text class="sub" x="332" y="177">small, named IPC actions</text>
+      <rect class="box" x="565" y="98" width="200" height="135" rx="14"/><text x="588" y="129">Electron main</text><text class="sub" x="588" y="153">windows · tray · timer</text><text class="sub" x="588" y="174">scores · message pack · IPC</text>
+      <rect class="outside" x="815" y="37" width="120" height="75" rx="14"/><text x="833" y="67">Local JSON</text><text class="sub" x="829" y="88">answers + pack</text>
+      <rect class="outside" x="815" y="221" width="120" height="75" rx="14"/><text x="837" y="251">Gemini API</text><text class="sub" x="829" y="272">one call, opt-in</text>
+      <path class="edge" d="M245 82 C275 82 278 145 310 155"/><path class="edge" d="M245 261 C278 261 278 187 310 174"/>
+      <path class="edge" d="M485 165 H565"/><path class="edge" d="M765 130 C791 130 788 82 815 82"/>
+      <path class="edge optional" d="M765 196 C793 196 788 258 815 258"/><path class="edge optional" d="M815 239 C787 220 793 204 765 186"/>
+    </svg>
+    <div class="key"><span><i class="dot"></i>Local app flow</span><span><i class="dot opt"></i>Optional external call after consent</span></div>
+    <p class="callout"><strong>Privacy boundary:</strong> no other app's name or content is read. Only a limited summary of non-sensitive onboarding answers is sent if the user explicitly chooses AI generation.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">Interactive journey</div>
+    <h2>Follow one guest from egg to reminder</h2>
+    <div class="choices" role="group" aria-label="Journey steps">
+      <button type="button" aria-pressed="true" data-step="0">1 · Begin</button><button type="button" aria-pressed="false" data-step="1">2 · Connect</button><button type="button" aria-pressed="false" data-step="2">3 · Wait</button><button type="button" aria-pressed="false" data-step="3">4 · Hatch</button><button type="button" aria-pressed="false" data-step="4">5 · Remind</button><button type="button" aria-pressed="false" data-step="5">6 · Respond</button>
+    </div>
+    <div class="step-panel" aria-live="polite"><div class="step-label" id="step-label">1 · Begin</div><p id="step-copy">Electron reads the guest JSON file and opens the blue incubation screen at the last saved step. No account is required.</p></div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Architecture choices</div><h2>Why these pieces?</h2>
+    <div class="grid">
+      <article class="card"><h3>Electron + plain web UI</h3><p>One main process controls Windows windows and a separate renderer draws them. JavaScript stays the main language; the accepted cost is a larger app.</p></article>
+      <article class="card"><h3>Tray-resident timer</h3><p>Closing the main window hides Dost so scheduled reminders continue. Quit fully to stop it; the remaining interval resumes on next launch.</p></article>
+      <article class="card"><h3>Local guest file</h3><p>One versioned JSON document preserves answers, scores, local reminders, demo consent/preview, and follow-up state across restarts.</p></article>
+      <article class="card"><h3>Fictional AI demo preview</h3><p>After consent, Gemini receives a built-in fictional profile and returns a sample pack. Guest answers stay local; the sample does not replace personalized reminders.</p></article>
+      <article class="card"><h3>Honest reminder cadence</h3><p>Two hours normally, two minutes in demo mode. It measures time Dost runs, not screen use. “Show reminder now” follows the real overlay path.</p></article>
+      <article class="card"><h3>Two clear characters</h3><p class="persona"><i class="blob green"></i> Chill Dost is green. <i class="blob coral"></i> Bossy Dost is orange-red, direct but kind.</p></article>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Files to build</div><h2>Where the behavior lives</h2>
+    <div class="files">Dost/
+├── package.json                 scripts and pinned dependencies
+├── .env.example                 placeholder only; never the API key
+├── src/
+│   ├── main/
+│   │   ├── main.js              lifecycle and window creation
+│   │   ├── tray.js              reopen and quit
+│   │   ├── reminder-clock.js    normal/demo intervals
+│   │   ├── guest-store.js       local JSON read/write
+│   │   ├── persona.js           scoring and tie-break
+│   │   ├── message-pack.js      Gemini, validation, fallback
+│   │   └── ipc-handlers.js      validated UI actions
+│   ├── preload/bridge.js        narrow renderer API
+│   ├── renderer/
+│   │   ├── incubation.html      egg, questions, consent
+│   │   ├── overlay.html         cross-app reminder
+│   │   ├── incubation.js        session and hatch UI
+│   │   ├── overlay.js           OK and cross actions
+│   │   ├── slime.js             static character; animations added last
+│   │   └── styles.css           palette and layout
+│   └── shared/
+│       ├── questions.js         15 question/scoring definitions
+│       ├── fallback-messages.js offline packs
+│       └── message-schema.js    generated response validation
+└── devpost/                     scope, PRD, spec, review pages</div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Demo contract</div><h2>What the recording can show</h2>
+    <div class="grid"><article class="card"><h3>Normal behavior</h3><p>Three sessions separated by 24 hours; reminder after a two-hour running interval.</p></article><article class="card"><h3>Accelerated demo</h3><p>30-second incubation waits and a two-minute reminder interval. A visible test control can show the same overlay immediately.</p></article><article class="card"><h3>AI preview consent</h3><p>The hatch screen identifies Google and unpaid-tier data terms. It sends only a fictional profile; guest answers stay on the PC. The user can skip the preview.</p></article></div>
+    <p class="muted">The free Gemini tier may use prompts and responses to improve products, and human reviewers may process them. The fictional preview is optional and labeled. A key for a local demo stays outside Git and must never ship inside a public app.</p>
+  </section>
+  <footer>Canonical blueprint: <a href="spec.md">spec.md</a> · Product behavior: <a href="prd.md">prd.md</a></footer>
+</main>
+<script>
+  const journey=[
+    ['1 · Begin','Electron reads the guest JSON file and opens the blue incubation screen at the last saved step. No account is required.'],
+    ['2 · Connect','The user answers five light questions, one at a time. The main process scores selectable answers and writes each response locally.'],
+    ['3 · Wait','Connect becomes available after 24 hours normally, or 30 seconds in the accelerated demo. Progress survives a restart.'],
+    ['4 · Hatch','After answer 15, persona scoring selects chill or bossy and picks the guest’s messages locally. A disclosure offers an optional AI preview using fictional data only.'],
+    ['5 · Remind','The app stays in the Windows tray. At the two-hour normal or two-minute demo interval, it opens the small lower-left overlay with locally selected messages.'],
+    ['6 · Respond','OK or cross closes DOST and saves the outcome. OK leads to a quote, another goal, or a joke next interval. Cross leads to a “did you do it?” check-in; dismissing that again leads to a different suggestion. Each dismissal restarts the interval. Character motion and expressions are added in the final build slice.']
+  ];
+  document.querySelectorAll('[data-step]').forEach(button=>button.addEventListener('click',()=>{
+    document.querySelectorAll('[data-step]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+    const item=journey[Number(button.dataset.step)];
+    document.getElementById('step-label').textContent=item[0];
+    document.getElementById('step-copy').textContent=item[1];
+  }));
+</script>
+</body>
+</html>
