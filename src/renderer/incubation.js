@@ -59,6 +59,8 @@ function formatWait(ms) {
 }
 
 function render() {
+  byId('developer-tools').hidden = !state.developerMode;
+  renderDeveloperTimer();
   const count = state.completedQuestions;
   byId('progress-count').textContent = `${count} of ${state.totalQuestions}`;
   byId('progress-fill').style.width = `${(count / state.totalQuestions) * 100}%`;
@@ -122,6 +124,24 @@ function render() {
   if (state.hatched) renderHatch();
 }
 
+function formatReminderTime(ms) {
+  if (!Number.isFinite(ms)) return 'not scheduled';
+  if (ms <= 0) return 'due now';
+  const totalSeconds = Math.ceil(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return hours ? `${hours}h ${minutes}m ${seconds}s` : `${minutes}m ${seconds}s`;
+}
+
+function renderDeveloperTimer() {
+  const timer = byId('developer-timer');
+  if (!timer) return;
+  timer.textContent = state?.reminderPending
+    ? 'Next reminder: waiting for your response'
+    : `Next reminder in: ${formatReminderTime(state?.reminderRemainingMs)}`;
+}
+
 function renderHatch() {
   const profile = state.personaConfig;
   byId('hatch-persona').textContent = `${profile.name.toUpperCase()} · ${profile.label.toUpperCase()}`;
@@ -143,9 +163,16 @@ async function initialize() {
   state = await window.dost.getIncubationState();
   render();
   window.setInterval(async () => {
-    if (!state.hatched && state.waitRemainingMs > 0) {
-      state = await window.dost.getIncubationState();
+    const shouldRefreshView = !state.hatched && state.waitRemainingMs > 0;
+    const shouldRefreshTimer = state.developerMode && state.hatched;
+    if (!shouldRefreshView && !shouldRefreshTimer) return;
+    const latest = await window.dost.getIncubationState();
+    if (shouldRefreshView) {
+      state = latest;
       render();
+    } else {
+      state = { ...state, reminderRemainingMs: latest.reminderRemainingMs, reminderPending: latest.reminderPending };
+      renderDeveloperTimer();
     }
   }, 1000);
 }

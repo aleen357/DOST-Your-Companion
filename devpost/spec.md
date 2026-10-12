@@ -91,7 +91,9 @@ PRD refs: `prd.md > Guest incubation and answers`, `Dismissal and follow-up`, an
 
 ### Reminder clock and tray
 
-Starts the first interval when Dost hatches, then restarts it whenever a reminder is dismissed. Keeps time while the app runs, including when its main window is hidden in the tray. Saves remaining duration when the user fully quits. Normal reminder interval is two hours; demo interval is two minutes. Demo mode also exposes **Show reminder now**. At a due time it asks the main process to show the overlay; it does not inspect app names, window contents, keystrokes, or scrolling.
+Starts the first interval when Dost hatches, then restarts it whenever a reminder is dismissed. Keeps time while the app runs, including when its main window is hidden in the tray. Saves remaining duration when the user fully quits. Normal reminder interval is two hours; demo and developer intervals are two minutes. At a due time it asks the main process to show the overlay; it does not inspect app names, window contents, keystrokes, or scrolling.
+
+`npm run start:dev` enables the same accelerated timing plus developer-only controls: a live next-reminder countdown, overlay preview, Start over, and an immediate reminder trigger. `npm run start:demo` keeps accelerated incubation and reminder timing but hides these controls. Regular `npm start` uses normal intervals and hides them too.
 
 PRD refs: `prd.md > Cross-app reminders`, `Dismissal and follow-up`, and `Demo trigger`.
 
@@ -113,7 +115,7 @@ The guest is one local record; there is no account or remote database.
 | `personaScores`, `persona` | Totals keyed by persona ID and the final selected type | Scores update from options; the highest score wins, with a random tie-break. The selected persona remains stable after answer 15. |
 | `messagePack` | Prepared local messages selected for this guest by persona and structured choice categories | Selected after scoring and reused offline; typed answers are not used in prompts or sent to a model. |
 | `demoGenerationConsent`, `demoMessagePack` | Whether user opted into a fictional AI sample preview and its validated result | Stored separately from the real guest pack; never used as personalized reminders. |
-| `nextReminderAt`, `followUpState`, `lastSuggestionId` | Reminder schedule and response cycle | Updated on overlay display/dismissal; persisted so a restart resumes the remaining interval and follow-up. |
+| `reminderRemainingMs`, `pendingReminder`, `followUpState`, `lastSuggestionId`, `lastReminderId`, `nextReminderKind` | Remaining schedule, any reminder awaiting a response, and response cycle | Saved on quit and after reminder changes; launch resumes the interval or re-shows a pending reminder. |
 
 `messagePack` contains bounded arrays for break ideas, encouragement, original wisdom-style lines, and jokes. Do not persist API request logs. **Start over** asks for confirmation, then replaces the local record with a new guest, clearing answers, persona, and saved message packs.
 

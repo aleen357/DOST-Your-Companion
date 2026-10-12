@@ -15,6 +15,7 @@ const personas = {
         { id: 'steady-progress', kind: 'encouragement', text: 'Small, steady progress still counts. You are doing okay.' },
         { id: 'coding-craft', kind: 'encouragement', text: 'Every bug you understand makes you a stronger engineer.' }
       ],
+      followUps: [{ id: 'did-you-break', kind: 'follow-up', text: 'Hey, did you get a chance to take a little break?' }],
       wisdom: [{ id: 'one-step', kind: 'wisdom', text: 'A small step is still a step toward the thing you want.' }],
       jokes: [{ id: 'debug-joke', kind: 'joke', text: 'Why did the developer go broke? Too many cache misses.' }]
     },
@@ -40,6 +41,7 @@ const personas = {
         { id: 'steady-progress', kind: 'encouragement', text: 'You showed up and made progress. Give yourself credit.' },
         { id: 'coding-craft', kind: 'encouragement', text: 'You can learn the pattern. One clear example at a time.' }
       ],
+      followUps: [{ id: 'did-you-break', kind: 'follow-up', text: 'Did you take that break? If not, let’s try a different one next time.' }],
       wisdom: [{ id: 'one-step', kind: 'wisdom', text: 'Consistency beats waiting for the perfect moment.' }],
       jokes: [{ id: 'debug-joke', kind: 'joke', text: 'There are 10 kinds of people: those who get binary and those who do not.' }]
     },

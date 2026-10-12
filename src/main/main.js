@@ -3,8 +3,9 @@ const path = require('node:path');
 const { questions } = require('../shared/questions');
 const { createGuestStore } = require('./guest-store');
 const { addScore, choosePersona } = require('./persona');
-const { selectLocalPack } = require('./message-selection');
+const { selectLocalPack, selectReminder } = require('./message-selection');
 const { getPersona } = require('../shared/personas');
+const { createReminderClock } = require('./reminder-clock');
 
 app.setName('DOST');
 
@@ -13,10 +14,115 @@ let reminderWindow;
 let tray;
 let isQuitting = false;
 let guestStore;
+let reminderClock;
+let reminderWindowReady = false;
+let activeReminderPresentation = null;
 let dataRecoveryNotice = false;
-const isDemo = process.argv.includes('--demo');
+let isPersistingQuit = false;
+const isDeveloperMode = process.argv.includes('--dev');
+const isDemo = isDeveloperMode || process.argv.includes('--demo');
 const resetGuestOnLaunch = process.argv.includes('--reset-guest');
 const incubationWaitMs = isDemo ? 30_000 : 24 * 60 * 60 * 1000;
+const reminderIntervalMs = isDemo ? 2 * 60 * 1000 : 2 * 60 * 60 * 1000;
+
+function makeReminderPresentation(reminder, preview = false, personaId = null) {
+  const profile = getPersona(personaId || guestStore.get().persona || 'chill') || getPersona('chill');
+  return {
+    persona: {
+      id: profile.id,
+      name: profile.name,
+      label: profile.label,
+      palette: profile.palette
+    },
+    message: reminder.text,
+    preview,
+    kind: reminder.kind,
+    stage: reminder.stage || null
+  };
+}
+
+function previewPresentation() {
+  return makeReminderPresentation({
+    kind: 'break',
+    text: 'You’ve done good work. A little water break might help your next idea find its way.'
+  }, true, 'chill');
+}
+
+function getReminderPresentation() {
+  return activeReminderPresentation || previewPresentation();
+}
+
+function presentReminder(presentation) {
+  activeReminderPresentation = presentation;
+  const window = createReminderWindow();
+  if (reminderWindowReady && !window.isDestroyed() && !window.webContents.isLoading()) {
+    window.webContents.send('dost:reminder-updated', presentation);
+    window.showInactive();
+  }
+}
+
+async function handleReminderDue() {
+  const guest = guestStore.get();
+  if (!guest.persona || !guest.messagePack) return;
+
+  let reminder = guest.pendingReminder;
+  if (!reminder) {
+    reminder = selectReminder(guest);
+    await guestStore.update((draft) => {
+      draft.pendingReminder = reminder;
+      draft.reminderRemainingMs = 0;
+    });
+  }
+  presentReminder(makeReminderPresentation(reminder, false, guestStore.get().persona));
+}
+
+async function resumeReminderClock() {
+  const guest = guestStore.get();
+  if (!guest.persona) return;
+  reminderClock = createReminderClock(reminderIntervalMs, handleReminderDue);
+  if (guest.pendingReminder) {
+    await handleReminderDue();
+    return;
+  }
+  const remaining = Number.isFinite(guest.reminderRemainingMs)
+    ? Math.max(0, guest.reminderRemainingMs)
+    : reminderIntervalMs;
+  if (guest.reminderRemainingMs === null) {
+    await guestStore.update((draft) => { draft.reminderRemainingMs = remaining; });
+  }
+  reminderClock.start(remaining);
+}
+
+function dismissReminder(action) {
+  if (!['ok', 'cross'].includes(action)) return;
+  const guest = guestStore.get();
+  if (!guest.pendingReminder) {
+    activeReminderPresentation = null;
+    if (reminderWindow && !reminderWindow.isDestroyed()) reminderWindow.hide();
+    return;
+  }
+
+  guestStore.update((draft) => {
+    const previous = draft.pendingReminder;
+    if (previous.kind === 'break') draft.lastSuggestionId = previous.id;
+    draft.lastReminderId = previous.id;
+    if (previous.stage === 'follow-up') {
+      draft.followUpState = null;
+      draft.nextReminderKind = 'suggestion';
+    } else if (action === 'cross') {
+      draft.followUpState = 'check-in';
+    } else {
+      draft.followUpState = null;
+      draft.nextReminderKind = 'variety';
+    }
+    draft.pendingReminder = null;
+    draft.reminderRemainingMs = reminderIntervalMs;
+  }).then(() => {
+    activeReminderPresentation = null;
+    if (reminderWindow && !reminderWindow.isDestroyed()) reminderWindow.hide();
+    reminderClock?.restart();
+  }).catch((error) => console.error('Could not save DOST reminder response:', error));
+}
 
 function getIncubationState() {
   const guest = guestStore.get();
@@ -27,6 +133,9 @@ function getIncubationState() {
   return {
     recovered: dataRecoveryNotice,
     demo: isDemo,
+    developerMode: isDeveloperMode,
+    reminderRemainingMs: reminderClock?.remainingMs() ?? (guest.pendingReminder ? 0 : guest.reminderRemainingMs),
+    reminderPending: Boolean(guest.pendingReminder),
     sessionIndex: guest.sessionIndex,
     completedSessions: guest.completedSessions.length,
     completedQuestions: Object.keys(guest.answers).length,
@@ -56,9 +165,19 @@ function getIncubationState() {
 }
 
 ipcMain.handle('dost:get-incubation-state', () => getIncubationState());
+ipcMain.handle('dost:get-reminder-presentation', () => getReminderPresentation());
+ipcMain.handle('dost:show-reminder-now', () => {
+  if (!isDeveloperMode || !guestStore.get().persona || !reminderClock) return false;
+  reminderClock.triggerNow();
+  return true;
+});
 ipcMain.handle('dost:reset-incubation', async () => {
+  if (!isDeveloperMode) throw new Error('Start DOST with --dev to reset incubation.');
+  reminderClock?.stop();
   await guestStore.reset();
   dataRecoveryNotice = false;
+  activeReminderPresentation = null;
+  if (reminderWindow && !reminderWindow.isDestroyed()) reminderWindow.hide();
   return getIncubationState();
 });
 ipcMain.handle('dost:submit-answer', async (_event, { questionId, answer }) => {
@@ -80,7 +199,7 @@ ipcMain.handle('dost:submit-answer', async (_event, { questionId, answer }) => {
     if (!text) throw new Error('Write a short answer to continue');
   }
 
-  await guestStore.update((draft) => {
+  const updatedGuest = await guestStore.update((draft) => {
     draft.answers[question.id] = question.type === 'choice'
       ? { type: 'choice', optionId: selectedOption.id, label: selectedOption.label }
       : { type: 'text', text };
@@ -97,9 +216,14 @@ ipcMain.handle('dost:submit-answer', async (_event, { questionId, answer }) => {
         draft.persona = choosePersona(draft.personaScores);
         draft.messagePack = selectLocalPack(draft.persona, draft.answers);
         draft.hatchedAt = Date.now();
+        draft.reminderRemainingMs = reminderIntervalMs;
+        draft.followUpState = null;
+        draft.pendingReminder = null;
+        draft.nextReminderKind = 'suggestion';
       }
     }
   });
+  if (updatedGuest.persona) await resumeReminderClock();
   return getIncubationState();
 });
 
@@ -167,17 +291,28 @@ function createReminderWindow() {
   reminderWindow.setAlwaysOnTop(true, 'floating');
   reminderWindow.loadFile(path.join(__dirname, '../renderer/overlay.html'));
   reminderWindow.once('ready-to-show', () => {
-    if (reminderWindow && !reminderWindow.isDestroyed()) reminderWindow.showInactive();
+    reminderWindowReady = true;
+    if (reminderWindow && !reminderWindow.isDestroyed() && activeReminderPresentation) {
+      reminderWindow.webContents.send('dost:reminder-updated', activeReminderPresentation);
+      reminderWindow.showInactive();
+    }
   });
   reminderWindow.once('closed', () => {
     reminderWindow = null;
+    reminderWindowReady = false;
   });
   return reminderWindow;
 }
 
 function showReminderPreview() {
-  const window = createReminderWindow();
-  if (window.webContents.isLoading() === false) window.showInactive();
+  if (!isDeveloperMode) return;
+  const guest = guestStore.get();
+  if (guest.pendingReminder) {
+    presentReminder(makeReminderPresentation(guest.pendingReminder, false, guest.persona));
+  } else {
+    const preview = previewPresentation();
+    presentReminder(makeReminderPresentation({ ...preview, text: preview.message }, true, guest.persona || 'chill'));
+  }
 }
 
 function createTray() {
@@ -186,8 +321,11 @@ function createTray() {
   tray.setToolTip('DOST — your desk companion');
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: 'Open DOST', click: () => showMainWindow() },
-    { label: 'Show companion preview', click: () => showReminderPreview() },
-    { type: 'separator' },
+    ...(isDeveloperMode ? [
+      { label: 'Preview companion', click: () => showReminderPreview() },
+      { label: 'Show reminder now', click: () => reminderClock?.triggerNow() },
+      { type: 'separator' }
+    ] : []),
     { label: 'Quit DOST', click: () => app.quit() }
   ]));
   tray.on('double-click', () => showMainWindow());
@@ -200,34 +338,51 @@ function showMainWindow() {
 }
 
 ipcMain.on('dost:show-reminder-preview', () => showReminderPreview());
-ipcMain.on('dost:dismiss-reminder', (_event, action) => {
-  if (!['ok', 'cross'].includes(action)) return;
-  if (reminderWindow && !reminderWindow.isDestroyed()) reminderWindow.hide();
-});
+ipcMain.on('dost:dismiss-reminder', (_event, action) => dismissReminder(action));
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   guestStore = createGuestStore(app.getPath('userData'));
-  guestStore.load().then(({ recovered }) => {
+  try {
+    const { recovered } = await guestStore.load();
     dataRecoveryNotice = recovered;
     if (resetGuestOnLaunch) {
-      return guestStore.reset().then(() => {
-        dataRecoveryNotice = false;
-        createTray();
-        createMainWindow();
-        app.on('activate', () => showMainWindow());
-      });
+      await guestStore.reset();
+      dataRecoveryNotice = false;
     }
     createTray();
     createMainWindow();
     app.on('activate', () => showMainWindow());
-  }).catch((error) => {
+    await resumeReminderClock();
+  } catch (error) {
     console.error('Could not initialize guest data:', error);
     app.quit();
-  });
+  }
 });
 
-app.on('before-quit', () => {
-  isQuitting = true;
+app.on('before-quit', (event) => {
+  if (isQuitting) return;
+  if (isPersistingQuit) {
+    event.preventDefault();
+    return;
+  }
+  event.preventDefault();
+  isPersistingQuit = true;
+  const remaining = reminderClock?.remainingMs() ?? null;
+  reminderClock?.stop();
+  (async () => {
+    await guestStore?.flush();
+    if (remaining !== null && guestStore?.get().persona && !guestStore.get().pendingReminder) {
+      await guestStore.update((draft) => { draft.reminderRemainingMs = remaining; });
+    }
+    await guestStore?.flush();
+    isQuitting = true;
+    isPersistingQuit = false;
+    app.quit();
+  })().catch((error) => {
+    console.error('Could not save DOST reminder time before quitting:', error);
+    isQuitting = true;
+    app.quit();
+  });
 });
 
 app.on('window-all-closed', () => {

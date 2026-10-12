@@ -50,8 +50,11 @@
         <p id="footer-copy">For now, meet your little desk friend.</p>
         <div class="footer-actions">
           <button class="primary-button" id="connect-button" type="button">Connect <span aria-hidden="true">↗</span></button>
-          <button class="secondary-button" id="preview-button" type="button">Preview overlay</button>
-          <button class="secondary-button" id="reset-button" type="button">Start over</button>
+          <div class="developer-tools" id="developer-tools" hidden>
+            <span class="developer-timer" id="developer-timer" role="status">Next reminder in: —</span>
+            <button class="secondary-button" id="preview-button" type="button">Preview overlay</button>
+            <button class="secondary-button" id="reset-button" type="button">Start over</button>
+          </div>
         </div>
       </div>
       <p class="prototype-note" id="feedback" role="status">Incubate with three short sessions. Your answers stay on this PC.</p>

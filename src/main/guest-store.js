@@ -2,8 +2,9 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const { getPersonaIds } = require('../shared/personas');
+const { selectLocalPack } = require('./message-selection');
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 function newGuest() {
   return {
@@ -16,7 +17,13 @@ function newGuest() {
     personaScores: Object.fromEntries(getPersonaIds().map((id) => [id, 0])),
     persona: null,
     messagePack: null,
-    hatchedAt: null
+    hatchedAt: null,
+    reminderRemainingMs: null,
+    followUpState: null,
+    pendingReminder: null,
+    lastSuggestionId: null,
+    lastReminderId: null,
+    nextReminderKind: 'suggestion'
   };
 }
 
@@ -24,7 +31,11 @@ function isValidGuest(value) {
   return value && value.schemaVersion === SCHEMA_VERSION && typeof value.guestId === 'string' &&
     value.answers && typeof value.answers === 'object' && Number.isInteger(value.sessionIndex) &&
     value.sessionIndex >= 0 && value.sessionIndex <= 3 && Array.isArray(value.completedSessions) &&
-    value.personaScores && getPersonaIds().every((id) => Number.isFinite(value.personaScores[id]));
+    value.personaScores && getPersonaIds().every((id) => Number.isFinite(value.personaScores[id])) &&
+    (value.reminderRemainingMs === null || (Number.isFinite(value.reminderRemainingMs) && value.reminderRemainingMs >= 0)) &&
+    (value.followUpState === null || value.followUpState === 'check-in') &&
+    (value.pendingReminder === null || (typeof value.pendingReminder.id === 'string' && typeof value.pendingReminder.text === 'string')) &&
+    ['suggestion', 'variety'].includes(value.nextReminderKind);
 }
 
 function migrateGuest(value) {
@@ -36,7 +47,7 @@ function migrateGuest(value) {
   }
   return {
     ...value,
-    schemaVersion: SCHEMA_VERSION,
+    schemaVersion: 2,
     personaScores: Object.fromEntries(getPersonaIds().map((id) => [id, Number.isFinite(value.personaScores[id]) ? value.personaScores[id] : 0]))
   };
 }
@@ -45,6 +56,13 @@ function createGuestStore(userDataPath) {
   const filePath = path.join(userDataPath, 'guest.json');
   let guest;
   let recovered = false;
+  let writeQueue = Promise.resolve();
+
+  function enqueue(operation) {
+    const result = writeQueue.then(operation);
+    writeQueue = result.catch(() => {});
+    return result;
+  }
 
   async function save(value) {
     const tempPath = `${filePath}.tmp`;
@@ -58,8 +76,9 @@ function createGuestStore(userDataPath) {
       try {
         const parsed = JSON.parse(await fs.readFile(filePath, 'utf8'));
         const migrated = parsed?.schemaVersion === 1 ? migrateGuest(parsed) : parsed;
-        if (!isValidGuest(migrated)) throw new Error('Unsupported guest data');
-        guest = migrated;
+        const current = migrated?.schemaVersion === 2 ? migrateToCurrent(migrated) : migrated;
+        if (!isValidGuest(current)) throw new Error('Unsupported guest data');
+        guest = current;
         if (parsed.schemaVersion !== SCHEMA_VERSION) await save(guest);
       } catch (error) {
         recovered = error.code !== 'ENOENT';
@@ -70,19 +89,40 @@ function createGuestStore(userDataPath) {
     },
     get() { return guest; },
     async reset() {
-      const freshGuest = newGuest();
-      await save(freshGuest);
-      guest = freshGuest;
-      recovered = false;
-      return guest;
+      return enqueue(async () => {
+        const freshGuest = newGuest();
+        await save(freshGuest);
+        guest = freshGuest;
+        recovered = false;
+        return guest;
+      });
     },
     async update(mutator) {
-      const draft = structuredClone(guest);
-      await mutator(draft);
-      await save(draft);
-      guest = draft;
-      return guest;
-    }
+      return enqueue(async () => {
+        const draft = structuredClone(guest);
+        await mutator(draft);
+        await save(draft);
+        guest = draft;
+        return guest;
+      });
+    },
+    async flush() { await writeQueue; }
+  };
+
+}
+
+function migrateToCurrent(value) {
+  if (value.schemaVersion !== 2) return value;
+  return {
+    ...value,
+    schemaVersion: SCHEMA_VERSION,
+    messagePack: value.persona ? selectLocalPack(value.persona, value.answers) : value.messagePack,
+    reminderRemainingMs: null,
+    followUpState: null,
+    pendingReminder: null,
+    lastSuggestionId: null,
+    lastReminderId: null,
+    nextReminderKind: 'suggestion'
   };
 }
 

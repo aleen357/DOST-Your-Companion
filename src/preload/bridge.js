@@ -3,6 +3,14 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('dost', Object.freeze({
   showReminderPreview: () => ipcRenderer.send('dost:show-reminder-preview'),
   getIncubationState: () => ipcRenderer.invoke('dost:get-incubation-state'),
+  getReminderPresentation: () => ipcRenderer.invoke('dost:get-reminder-presentation'),
+  showReminderNow: () => ipcRenderer.invoke('dost:show-reminder-now'),
+  onReminderUpdate: (callback) => {
+    if (typeof callback !== 'function') return () => {};
+    const listener = (_event, presentation) => callback(presentation);
+    ipcRenderer.on('dost:reminder-updated', listener);
+    return () => ipcRenderer.removeListener('dost:reminder-updated', listener);
+  },
   resetIncubation: () => ipcRenderer.invoke('dost:reset-incubation'),
   submitAnswer: (questionId, answer) => ipcRenderer.invoke('dost:submit-answer', { questionId, answer }),
   dismissReminder: (action) => {

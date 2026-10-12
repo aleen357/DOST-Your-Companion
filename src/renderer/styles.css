@@ -63,6 +63,9 @@ h1 { margin: 0; color: #283d5a; font: 700 30px/1.24 Manrope, sans-serif; letter-
 .footer-actions { display: flex; align-items: center; gap: 8px; }
 .secondary-button { min-height: 40px; padding: 0 13px; border: 1px solid #dce6f2; border-radius: 12px; background: #fff; color: #62748d; cursor: pointer; font-size: 11px; font-weight: 600; }
 .secondary-button:hover { background: #f4f8fd; }
+.developer-tools { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; width: 100%; }
+.developer-tools[hidden] { display: none; }
+.developer-timer { color: #74869d; font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .question-panel { margin: 18px 0 4px; padding: 20px; border: 1px solid #e4ebf4; border-radius: 18px; background: #ffffffc9; text-align: left; }
 .question-meta { display: flex; justify-content: space-between; color: #91a0b4; font-size: 9px; font-weight: 700; letter-spacing: .12em; }
 .question-panel h2 { margin: 11px 0 15px; color: #2b405d; font: 700 18px/1.35 Manrope, 'Segoe UI', sans-serif; letter-spacing: -.025em; }
