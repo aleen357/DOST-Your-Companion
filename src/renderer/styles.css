@@ -69,9 +69,12 @@ h1 { margin: 0; color: #283d5a; font: 700 30px/1.24 Manrope, sans-serif; letter-
 .question-panel { margin: 18px 0 4px; padding: 20px; border: 1px solid #e4ebf4; border-radius: 18px; background: #ffffffc9; text-align: left; }
 .question-meta { display: flex; justify-content: space-between; color: #91a0b4; font-size: 9px; font-weight: 700; letter-spacing: .12em; }
 .question-panel h2 { margin: 11px 0 15px; color: #2b405d; font: 700 18px/1.35 Manrope, 'Segoe UI', sans-serif; letter-spacing: -.025em; }
-.answer-options { display: grid; gap: 8px; }
+.answer-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .answer-option { min-height: 39px; padding: 8px 12px; border: 1px solid #e4eaf2; border-radius: 11px; background: #fff; color: #53677f; cursor: pointer; text-align: left; font-size: 11px; transition: border-color .15s ease, background .15s ease; }
 .answer-option:hover,.answer-option[aria-pressed="true"] { border-color: #8bd6b5; background: #effaf4; color: #386c57; }
+.answer-option:focus-visible,.decline-answer:focus-visible { outline: 3px solid #79cda8; outline-offset: 2px; }
+.answer-help { margin: 0 0 12px; color: #74859a; font-size: 10px; line-height: 1.5; }
+.decline-answer { margin-top: 8px; padding: 7px 0; border: 0; background: transparent; color: #74859a; cursor: pointer; text-decoration: underline; font: inherit; font-size: 10px; }
 .answer-label { display: block; margin: 6px 0; color: #74859a; font-size: 10px; }
 .question-panel textarea { width: 100%; min-height: 76px; resize: vertical; padding: 11px 12px; border: 1px solid #dfe7f1; border-radius: 11px; outline: none; color: #33465d; font: inherit; font-size: 12px; }
 .question-panel textarea:focus { border-color: #83ceaa; box-shadow: 0 0 0 3px #83ceaa25; }
@@ -86,6 +89,20 @@ h1 { margin: 0; color: #283d5a; font: 700 30px/1.24 Manrope, sans-serif; letter-
 .hatch-message { margin: 8px 0 12px; color: #6d8097; font-size: 12px; }
 .hatch-pack { display: grid; gap: 7px; }
 .message-chip { padding: 9px 12px; border: 1px solid #e3ecf0; border-radius: 11px; background: #f8fcfa; color: #5e7481; font-size: 10px; }
+.hatch-choice-panel { margin: 20px 0 4px; padding: 22px; border: 1px solid #e4ebf4; border-radius: 18px; background: #ffffffc9; text-align: left; }
+.hatch-choice-panel h2 { margin: 4px 0 10px; color: #2b405d; font: 700 21px/1.3 Manrope, 'Segoe UI', sans-serif; }
+.hatch-choice-panel > .hatch-message { margin-bottom: 16px; }
+.ai-disclosure { padding: 14px 16px; border: 1px solid #e2eaf3; border-radius: 13px; background: #f8fafd; color: #63748a; font-size: 11px; line-height: 1.6; }
+.ai-disclosure h3 { margin: 0 0 7px; color: #3b506b; font-size: 12px; }
+.ai-disclosure p { margin: 7px 0 0; }
+.ai-key-warning { padding: 12px 14px; border-radius: 12px; background: #f6f8fb; color: #64768b; font-size: 11px; line-height: 1.5; }
+.hatch-choice-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
+.hatch-choice-actions .secondary-button { min-height: 43px; }
+.ai-sample { margin-top: 22px; padding: 17px 20px; border: 1px solid #dfe9f4; border-radius: 16px; background: #f8fafd; text-align: left; }
+.ai-sample h3 { margin: 0; color: #415976; font-size: 14px; }
+.ai-sample > p { margin: 6px 0 12px; color: #7b8ba0; font-size: 10px; line-height: 1.5; }
+.ai-sample-group h4 { margin: 11px 0 4px; color: #71839a; font-size: 10px; text-transform: uppercase; letter-spacing: .07em; }
+.ai-sample-group ul { margin: 0; padding-left: 18px; color: #5d7188; font-size: 11px; line-height: 1.6; }
 
 .overlay-page { width: 100vw; height: 100vh; overflow: hidden; background: transparent; user-select: none; }
 .companion-card { display: flex; align-items: center; gap: 12px; width: 100%; height: 100%; padding: 13px 15px 13px 10px; border: 1px solid #ffffffd9; border-radius: 21px; background: linear-gradient(135deg, #fff 0%, #fbfffd 100%); box-shadow: 0 13px 35px #263b5630, 0 3px 8px #22384b16; animation: card-enter .34s cubic-bezier(.2,.8,.2,1) both; }
@@ -122,6 +139,7 @@ h1 { margin: 0; color: #283d5a; font: 700 30px/1.24 Manrope, sans-serif; letter-
   .card-footer p { max-width: none; }
   .footer-actions { flex-direction: column; }
   .footer-actions button { width: 100%; }
+  .answer-options { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

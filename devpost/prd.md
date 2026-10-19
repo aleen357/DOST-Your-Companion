@@ -5,7 +5,7 @@ status: approved
 
 # DOST — Product Requirements
 
-A small animated companion that learns about one software engineer during incubation, then gives them personalized break reminders over other work.
+A small animated companion that learns about a person during incubation, then gives them personalized break reminders over other work.
 Source: `scope.md > The Unique Kernel`, `Who It's For`, and `The Core Loop`.
 
 ## The Core Journey
@@ -13,9 +13,9 @@ Source: `scope.md > The Unique Kernel`, `Who It's For`, and `The Core Loop`.
 1. **Arrive as a guest.** The user sees Dost's egg and the effort remaining before it hatches. No account setup is required for the proof of concept.
 2. **Complete the first Connect session.** The user opens a compact dialogue at the bottom of the screen. It asks five questions, one at a time, using a mix of selectable answers and typed responses. Every question must be answered to finish the session.
 3. **Return for the next sessions.** After the first and second groups of five answers, Connect is unavailable for 24 hours. The user returns for the next session and answers five more questions. The proof-of-concept demo shortens these waits so all three sessions can be shown at once.
-4. **Hatch Dost.** After all 15 answers are complete, selectable answers determine the chill-versus-bossy score. Dost's reminder pack is selected locally from prepared messages using persona and structured answer categories; typed answers stay local. At hatching the user may opt into a clearly labeled AI demo preview. It sends a built-in fictional profile—not the guest's answers—to Google's Gemini free tier. The generated sample is saved locally and shown as a preview, not used as the guest's personalized pack. If the user declines or generation is unavailable, Dost still hatches with local messages.
-5. **Receive a reminder over other work.** After Dost has been running for roughly two hours, it appears as a small, non-blocking overlay over the current app. The demo shortens the interval to two minutes. This is a scheduled running-time reminder, not actual screen-use detection. The reminder offers a relevant alternative, such as taking a 15-minute walk or drinking water, with encouragement.
-6. **Respond and continue the cycle.** OK or cross dismisses the overlay. OK signals that the user listened; after the normal interval, Dost offers a motivational quote, another goal, or a joke. Cross means the user did not do the suggestion; at the next interval, Dost asks whether they did it in its own persona. If dismissed again, the following interval brings a different suggestion.
+4. **Hatch Dost.** After all 15 answers are complete, selectable answers determine the score-based chill-or-bossy persona. The user may choose to generate Dost's personalized message pack with a local model. DOST explains that Ollama and the selected model must be installed; the user's answers are sent only to Ollama running on this PC. The model also infers a persona from the answer profile; if its inferred persona disagrees with the score-based one, DOST chooses Chill. If the user skips setup, Ollama is unavailable, or generation fails, Dost hatches with the score-based persona and prepared local messages.
+5. **Receive reminders over other work.** The habit lane offers a break nudge every two hours; the light lane offers a joke or wisdom line about every 50 minutes, with spacing rules to avoid crowding the habit nudge. Demo timing scales these to two minutes and 50 seconds. This is scheduled running time, not actual screen-use detection.
+6. **Respond and continue the cycle.** OK or cross dismisses the overlay without resetting either clock. OK makes the next light message an encouragement. Cross mutes light messages for five hours; habit nudges continue. If the crossed message was a habit nudge, the next habit slot asks whether the user did it. If that check-in is dismissed, the following habit slot offers a different suggestion.
 
 ## Screens and Layout
 
@@ -49,9 +49,9 @@ Source: `scope.md > The Unique Kernel`, `Who It's For`, and `The Core Loop`.
 Source: `scope.md > The Core Loop` and `The POC Boundary`.
 
 - The user completes three Connect sessions, with five questions per session and a 24-hour wait between sessions.
-- Questions cover the learner's stated context areas: lifestyle habits, occupation/work, ideals or goals, personality, and hurdles.
-- The 15 questions use a mix of selectable and typed responses. Each session must be fully answered before it counts; incomplete answers do not complete the session.
-- Selectable answers contribute persona points and can select prepared messages locally. Typed answers stay in the guest's local context, are not sent to any model, and do not receive an immediate reply.
+- Questions cover daily life and roles, goals, social style, hurdles, and preferred support; the wording must work for people who work, study, provide care, manage a home, or have changing routines.
+- The 15 questions use single-choice, bounded multi-select, and short typed responses. A multi-select “none/not sure” choice is exclusive. A typed response may be declined explicitly. Each session must be fully answered before it counts; incomplete answers do not complete the session.
+- Selectable answers contribute persona points only where the user expresses a preferred support style. All answers, including typed responses, remain local and may be included in the optional local-model prompt after the user chooses generation; they do not receive an immediate reply during incubation.
 - Guest progress and answers remain available across the three incubation visits.
 - **Start over** asks for confirmation, then clears all saved guest progress and returns to the fresh egg.
 
@@ -60,8 +60,9 @@ Source: `scope.md > The Core Loop` and `The POC Boundary`.
 Source: `scope.md > The Unique Kernel` and `Inspiration & Identity`.
 
 - Once all 15 answers are complete, compare the selectable-answer scores.
-- Some choices add +2 to chill; some add +3 to bossy; designated choices may add +2 randomly to either persona.
+- Support-style choices add +2 to chill, +3 to bossy, or +2 randomly when the user says the preferred tone depends on the moment. Other choices describe the user's context and do not score the persona.
 - The higher total determines the persona. If totals tie, choose randomly.
+- When local generation is available, include its inferred persona in the generated pack. If it differs from the score-based persona, the final persona is Chill. If local generation is skipped or fails, keep the score-based persona.
 - Show the egg hatching and introduce the resulting Dost. The green chill and orange-red bossy variants use static placeholder art until final animation polish, with clear supportive or direct wording.
 
 ### Cross-app reminders
@@ -69,18 +70,17 @@ Source: `scope.md > The Unique Kernel` and `Inspiration & Identity`.
 Source: `scope.md > The Core Loop` and `What "Working" Looks Like`.
 
 - After the agreed app-running interval, Dost appears automatically over other work; the user does not need to open Dost to trigger each reminder.
-- The normal trigger is a two-hour interval while the app is running; demo mode shortens it to two minutes. Dost remains running in the Windows tray when its main window is closed. This is an app-running interval, not system-wide screen-time detection.
-- Dost's actual reminder pack is selected locally from prepared messages using persona and structured choice categories; typed answers remain local and are not processed by a model.
-- Before hatching, the user may opt into a separate AI demo preview. Show an in-app disclosure naming Google and the Gemini free tier, explaining unpaid-tier prompt use and possible human review, and stating that only a built-in fictional profile is sent. The guest's answers stay on this PC. The generated sample is stored locally and labeled as a demo preview, not used for the guest's reminders.
-- If the user declines, is offline, has no configured API key, hits a rate limit, or generation fails, skip the optional preview and continue hatching normally.
+- DOST has two independent app-running reminder lanes: a habit nudge every two hours, and a light joke/wisdom message about every 50 minutes. A light message is skipped if it would be less than 30 minutes from a habit nudge. Light-message timing receives a small random jitter; demo mode scales the schedule to a 50-second light interval and a two-minute habit interval, with a 30-second minimum gap. Dost remains running in the Windows tray when its main window is closed. This is an app-running schedule, not system-wide screen-time detection.
+- After hatching, the user may ask DOST to generate its message pack using their saved answers through Ollama and a locally installed model. Show that processing happens on this PC and do not send the profile to any remote endpoint. Keep the agreed prompt language and emotion names; return a bounded JSON pack that the app validates before saving.
+- The user may skip local generation. If Ollama or the selected model is missing, unavailable, or returns invalid output, show setup/retry guidance and continue with prepared messages so DOST still works.
 - The reminder uses the locally saved message pack to offer a relevant break or alternative, with motivation or coding encouragement. Examples include a 15-minute walk, water, a motivational quote, another goal, or a joke.
 - The overlay stays small and non-blocking, with OK and cross controls.
 
 ### Dismissal and follow-up
 
-- **OK:** dismisses the overlay and marks the suggestion as acknowledged. At the next normal reminder interval, Dost offers a motivational quote, another goal, or a joke.
-- **Cross:** dismisses the overlay and treats the suggestion as not completed. At the next normal reminder interval, Dost asks whether the user did it, using its own persona.
-- If that follow-up is also dismissed, the following interval brings a different suggestion.
+- **OK:** dismisses the overlay and marks the message as acknowledged. The two reminder clocks continue; the next light message is an encouragement, after which light messages return to random jokes/wisdom.
+- **Cross:** dismisses the overlay and mutes light jokes/wisdom for five hours (five minutes in demo mode). Habit nudges continue. If the crossed message was a habit nudge, the next habit slot asks whether the user did it, using DOST's persona.
+- If that habit follow-up is dismissed, the following habit slot brings a different suggestion. A cross on a light message does not create a “did you do it?” check-in.
 
 ## States and Boundaries
 
@@ -95,20 +95,20 @@ Source: `scope.md > The Core Loop` and `What "Working" Looks Like`.
 ## Product Decisions
 
 - Keep the incubation because Dost needs user context to offer relevant guidance.
-- Use 15 questions total, five in each of three sessions; the 50-question bank is deferred.
-- Ask one question at a time, mixing choice and typed answers. Require all five answers in each session.
-- Use choice answers for chill/bossy scoring and typed answers as local-only context; do not have Dost reply during incubation.
+- Use 15 questions total across five context groups and three sessions of five; the larger 50-question bank remains deferred.
+- Ask one question at a time, mixing single-select, bounded multi-select, and typed answers. Every step must be answered or explicitly declined before its session completes.
+- Use only explicit support-style answers for chill/bossy scoring and retain all other selections and typed answers locally; do not have Dost reply during incubation.
 - Use +2 chill, +3 bossy, and occasional random +2 scoring; choose randomly on a final tie.
-- Make post-hatch reminders a small cross-app intervention using a two-hour app-running interval, shortened to two minutes in demo mode.
-- Offer one optional AI demo preview at hatching, generated from a built-in fictional profile only. Clearly disclose the free-tier data use and never send guest answers. Select Dost's actual reminder pack locally from prepared content.
-- OK acknowledges; cross indicates the user did not do the suggestion. The follow-up uses the same normal interval.
+- Make post-hatch reminders a small cross-app intervention with a two-hour habit lane plus a roughly 50-minute light joke/wisdom lane. Enforce a 30-minute minimum gap around habit prompts, add small jitter to light timing, and mute light prompts for five hours after cross. Demo mode scales these to two minutes, 50 seconds, 30 seconds, and five minutes respectively.
+- Offer optional, one-time local-model generation after incubation, using the guest's saved answers to create Dost's message pack. Keep inference on the user's PC and fall back to prepared local content if setup or generation fails.
+- OK acknowledges and changes the next light follow-up to encouragement without resetting either clock. Cross mutes light messages for five hours; crossing a habit prompt also schedules a check-in for the next habit slot.
 - Remove the cleaning action and six-hour cooldown to keep the incubation focused on the 15 answers.
 
 ## What We're Building
 
 - A guest incubation journey with three five-question sessions, mixed response types, mandatory answers, and a shortened 24-hour wait in the demo.
 - An egg progress display and hatch into the score-selected Dost persona.
-- A small cross-app Dost overlay after the app-running interval, with locally selected personalized reminder content, OK/cross actions, and the defined follow-up cycle. The optional fictional AI preview demonstrates generation separately. Final character animation polish is included as the last build slice.
+- A small cross-app Dost overlay after the app-running interval, with personalized reminder content, OK/cross actions, and the defined follow-up cycle. Optional local-model generation creates the personalized pack; prepared messages remain the offline fallback. Final character animation polish is included as the last build slice.
 
 ## Deferred From the POC
 

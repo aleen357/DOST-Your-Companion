@@ -33,9 +33,11 @@
       <section class="question-panel" id="question-panel" aria-live="polite" hidden>
         <div class="question-meta"><span id="question-group">SESSION 1</span><span id="question-number"></span></div>
         <h2 id="question-prompt"></h2>
+        <p class="answer-help" id="answer-help" hidden></p>
         <div id="answer-options" class="answer-options"></div>
         <label class="answer-label" id="text-answer-label" for="text-answer" hidden>Your answer</label>
         <textarea id="text-answer" maxlength="240" placeholder="A few words is plenty." hidden></textarea>
+        <button class="decline-answer" id="decline-answer" type="button" hidden>Prefer not to share</button>
         <p class="form-error" id="form-error" role="status"></p>
         <button class="primary-button continue-button" id="continue-button" type="button">Continue <span aria-hidden="true">→</span></button>
       </section>
@@ -45,6 +47,27 @@
         <h2 id="hatch-title">Hello, friend.</h2>
         <p class="hatch-message" id="hatch-message"></p>
         <div class="hatch-pack" id="hatch-pack"></div>
+        <section class="ai-sample" id="ai-sample" hidden aria-label="Lines DOST wrote for you"></section>
+      </section>
+      <section class="hatch-choice-panel" id="hatch-choice-panel" hidden aria-labelledby="hatch-choice-title">
+        <p class="eyebrow">READY TO HATCH</p>
+        <h2 id="hatch-choice-title">Your DOST is ready.</h2>
+        <p class="hatch-message">DOST can read your answers and write its own nudges, wisdom and jokes just for you — using a small AI model that runs on this PC.</p>
+        <div class="ai-disclosure" id="ai-disclosure">
+          <h3>How your answers are used</h3>
+          <p>If you choose <strong>Write my messages</strong>, DOST sends your saved answers to Ollama, a model runtime running on this computer (<code>127.0.0.1</code>). Nothing is sent to a cloud service, and DOST keeps no copy of the prompt — only the finished messages are saved on this PC.</p>
+          <p>It can take a minute or two the first time. You can also skip and hatch with DOST’s prepared messages.</p>
+        </div>
+        <div class="ai-key-warning" id="setup-guide" hidden>
+          <p id="setup-text"></p>
+          <p><code id="setup-command"></code></p>
+        </div>
+        <p class="form-error" id="ai-preview-status" role="status" aria-live="polite"></p>
+        <div class="hatch-choice-actions">
+          <button class="primary-button" id="generate-preview-button" type="button">Write my messages</button>
+          <button class="secondary-button" id="check-again-button" type="button" hidden>Check again</button>
+          <button class="secondary-button" id="skip-preview-button" type="button">Skip and hatch DOST</button>
+        </div>
       </section>
       <div class="card-footer">
         <p id="footer-copy">For now, meet your little desk friend.</p>

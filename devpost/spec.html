@@ -25,20 +25,20 @@
     <div class="eyebrow">The system at a glance</div>
     <h2>What talks to what?</h2>
     <svg class="diagram" viewBox="0 0 960 350" role="img" aria-labelledby="diag-title diag-desc">
-      <title id="diag-title">Dost app architecture and data flow</title><desc id="diag-desc">The incubation and overlay windows use a preload bridge to reach Electron's main process. The main process controls the tray, timer, local guest JSON file, and optional Gemini generation after consent.</desc>
+      <title id="diag-title">Dost app architecture and data flow</title><desc id="diag-desc">The incubation and overlay windows use a preload bridge to reach Electron's main process. The main process controls the tray, timer, local guest JSON file, and optional Ollama generation on this computer.</desc>
       <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#9bbcff"/></marker></defs>
-      <rect class="box" x="25" y="36" width="220" height="92" rx="14"/><text x="45" y="67">Incubation window</text><text class="sub" x="45" y="91">egg · questions · consent · hatch</text>
+      <rect class="box" x="25" y="36" width="220" height="92" rx="14"/><text x="45" y="67">Incubation window</text><text class="sub" x="45" y="91">egg · questions · model setup</text>
       <rect class="box" x="25" y="220" width="220" height="82" rx="14"/><text x="45" y="251">Reminder overlay</text><text class="sub" x="45" y="275">slime · suggestion · actions</text>
       <rect class="box" x="310" y="122" width="175" height="90" rx="14"/><text x="332" y="153">Preload bridge</text><text class="sub" x="332" y="177">small, named IPC actions</text>
       <rect class="box" x="565" y="98" width="200" height="135" rx="14"/><text x="588" y="129">Electron main</text><text class="sub" x="588" y="153">windows · tray · timer</text><text class="sub" x="588" y="174">scores · message pack · IPC</text>
       <rect class="outside" x="815" y="37" width="120" height="75" rx="14"/><text x="833" y="67">Local JSON</text><text class="sub" x="829" y="88">answers + pack</text>
-      <rect class="outside" x="815" y="221" width="120" height="75" rx="14"/><text x="837" y="251">Gemini API</text><text class="sub" x="829" y="272">one call, opt-in</text>
+      <rect class="outside" x="815" y="221" width="120" height="75" rx="14"/><text x="837" y="251">Ollama</text><text class="sub" x="829" y="272">local model</text>
       <path class="edge" d="M245 82 C275 82 278 145 310 155"/><path class="edge" d="M245 261 C278 261 278 187 310 174"/>
       <path class="edge" d="M485 165 H565"/><path class="edge" d="M765 130 C791 130 788 82 815 82"/>
       <path class="edge optional" d="M765 196 C793 196 788 258 815 258"/><path class="edge optional" d="M815 239 C787 220 793 204 765 186"/>
     </svg>
-    <div class="key"><span><i class="dot"></i>Local app flow</span><span><i class="dot opt"></i>Optional external call after consent</span></div>
-    <p class="callout"><strong>Privacy boundary:</strong> no other app's name or content is read. Only a limited summary of non-sensitive onboarding answers is sent if the user explicitly chooses AI generation.</p>
+    <div class="key"><span><i class="dot"></i>Local app flow</span><span><i class="dot opt"></i>Optional local model call</span></div>
+    <p class="callout"><strong>Privacy boundary:</strong> no other app's name or content is read. If the user chooses generation, onboarding answers go only to Ollama running on this computer; no cloud model receives them.</p>
   </section>
 
   <section>
@@ -55,8 +55,8 @@
     <div class="grid">
       <article class="card"><h3>Electron + plain web UI</h3><p>One main process controls Windows windows and a separate renderer draws them. JavaScript stays the main language; the accepted cost is a larger app.</p></article>
       <article class="card"><h3>Tray-resident timer</h3><p>Closing the main window hides Dost so scheduled reminders continue. Quit fully to stop it; the remaining interval resumes on next launch.</p></article>
-      <article class="card"><h3>Local guest file</h3><p>One versioned JSON document preserves answers, scores, local reminders, demo consent/preview, and follow-up state across restarts.</p></article>
-      <article class="card"><h3>Fictional AI demo preview</h3><p>After consent, Gemini receives a built-in fictional profile and returns a sample pack. Guest answers stay local; the sample does not replace personalized reminders.</p></article>
+      <article class="card"><h3>Local guest file</h3><p>One versioned JSON document preserves answers, scores, local reminders, generated messages, and follow-up state across restarts.</p></article>
+      <article class="card"><h3>Optional local generation</h3><p>Ollama uses the guest's answers to make a personalized pack on this PC. Prepared messages are the fallback if the user skips or local generation is unavailable.</p></article>
       <article class="card"><h3>Honest reminder cadence</h3><p>Two hours normally, two minutes in demo mode. It measures time Dost runs, not screen use. “Show reminder now” follows the real overlay path.</p></article>
       <article class="card"><h3>Two clear characters</h3><p class="persona"><i class="blob green"></i> Chill Dost is green. <i class="blob coral"></i> Bossy Dost is orange-red, direct but kind.</p></article>
     </div>
@@ -66,7 +66,6 @@
     <div class="eyebrow">Files to build</div><h2>Where the behavior lives</h2>
     <div class="files">Dost/
 ├── package.json                 scripts and pinned dependencies
-├── .env.example                 placeholder only; never the API key
 ├── src/
 │   ├── main/
 │   │   ├── main.js              lifecycle and window creation
@@ -74,11 +73,11 @@
 │   │   ├── reminder-clock.js    normal/demo intervals
 │   │   ├── guest-store.js       local JSON read/write
 │   │   ├── persona.js           scoring and tie-break
-│   │   ├── message-pack.js      Gemini, validation, fallback
+│   │   ├── local-model.js       Ollama detection, validation, fallback
 │   │   └── ipc-handlers.js      validated UI actions
 │   ├── preload/bridge.js        narrow renderer API
 │   ├── renderer/
-│   │   ├── incubation.html      egg, questions, consent
+│   │   ├── incubation.html      egg, questions, model setup
 │   │   ├── overlay.html         cross-app reminder
 │   │   ├── incubation.js        session and hatch UI
 │   │   ├── overlay.js           OK and cross actions
@@ -93,8 +92,8 @@
 
   <section>
     <div class="eyebrow">Demo contract</div><h2>What the recording can show</h2>
-    <div class="grid"><article class="card"><h3>Normal behavior</h3><p>Three sessions separated by 24 hours; reminder after a two-hour running interval.</p></article><article class="card"><h3>Accelerated demo</h3><p>30-second incubation waits and a two-minute reminder interval. A visible test control can show the same overlay immediately.</p></article><article class="card"><h3>AI preview consent</h3><p>The hatch screen identifies Google and unpaid-tier data terms. It sends only a fictional profile; guest answers stay on the PC. The user can skip the preview.</p></article></div>
-    <p class="muted">The free Gemini tier may use prompts and responses to improve products, and human reviewers may process them. The fictional preview is optional and labeled. A key for a local demo stays outside Git and must never ship inside a public app.</p>
+    <div class="grid"><article class="card"><h3>Normal behavior</h3><p>Three sessions separated by 24 hours; reminder after a two-hour running interval.</p></article><article class="card"><h3>Accelerated demo</h3><p>30-second incubation waits and a two-minute reminder interval. A visible test control can show the same overlay immediately.</p></article><article class="card"><h3>Local model setup</h3><p>Install Ollama for Windows and download the configured model. DOST checks for it and generates the message pack locally; the user can skip setup and hatch with prepared messages.</p></article></div>
+    <p class="muted">The model needs an internet download once. After setup, profile answers are sent only to Ollama running on this computer.</p>
   </section>
   <footer>Canonical blueprint: <a href="spec.md">spec.md</a> · Product behavior: <a href="prd.md">prd.md</a></footer>
 </main>
@@ -103,7 +102,7 @@
     ['1 · Begin','Electron reads the guest JSON file and opens the blue incubation screen at the last saved step. No account is required.'],
     ['2 · Connect','The user answers five light questions, one at a time. The main process scores selectable answers and writes each response locally.'],
     ['3 · Wait','Connect becomes available after 24 hours normally, or 30 seconds in the accelerated demo. Progress survives a restart.'],
-    ['4 · Hatch','After answer 15, persona scoring selects chill or bossy and picks the guest’s messages locally. A disclosure offers an optional AI preview using fictional data only.'],
+    ['4 · Hatch','After answer 15, persona scoring selects chill or bossy. If Ollama and the selected model are installed, DOST can generate a personalized pack locally; otherwise it uses prepared messages.'],
     ['5 · Remind','The app stays in the Windows tray. At the two-hour normal or two-minute demo interval, it opens the small lower-left overlay with locally selected messages.'],
     ['6 · Respond','OK or cross closes DOST and saves the outcome. OK leads to a quote, another goal, or a joke next interval. Cross leads to a “did you do it?” check-in; dismissing that again leads to a different suggestion. Each dismissal restarts the interval. Character motion and expressions are added in the final build slice.']
   ];
