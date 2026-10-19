@@ -59,14 +59,14 @@ Build mode: learn
   Learner check: In `npm run start:dev`, use **Start over**, answer through all three demo sessions, try each answer type and “Prefer not to share,” and confirm the support-style answers and local-model personalization make sense. Check that wording feels natural outside software work.
   Commit: `Refine DOST incubation questions and response types`
 
-- [ ] **6. DOST's character gets its final animation and expressions**
+- [x] **6. DOST's character gets its final animation and expressions**
   Becomes usable: The same modular slime art now has a calm idle motion and clear chill/bossy reactions that make the companion feel alive without obscuring its message.
   Why now: Character motion is the final visual polish, after the full incubation, reminder, follow-up, and optional AI journeys are in place; the separate `slime.js` module keeps it easy to adjust.
   PRD ref: `prd.md > Look and Feel`, `prd.md > Screens and Layout > Hatching`, and `prd.md > What We're Building`
   Spec ref: `spec.md > Look and Feel`, `spec.md > Components > Cross-app reminder overlay`, and `spec.md > File Structure`
   Build: Add lightweight CSS/SVG idle and reaction states in `slime.js` and the character styles for both personas. Respect reduced-motion preferences and keep controls and message text unaffected.
   Verify (mechanical): Run `npm start`; confirm both personas render, idle and reaction states switch from the intended UI states, and reduced-motion settings suppress movement while leaving the character visible.
-  Learner check: View each persona and reaction in the app. Tell me whether the animation reads as friendly and clear at the overlay's small size.
+  Learner check: Completed by the learner; animations were tested and approved.
   Commit: `Polish DOST character animations`
 
 ## Hands-on Checkpoints

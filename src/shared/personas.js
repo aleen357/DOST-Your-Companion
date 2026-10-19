@@ -6,6 +6,7 @@ const personas = {
     theme: 'chill',
     introduction: 'I’m Dost. We’ll take it one step at a time.',
     palette: { body: '#70d4a5', line: '#23594f', shine: '#eafff4', blush: '#f4979d' },
+    face: { brows: 'none' },
     messages: {
       suggestions: [
         { id: 'walk-break', kind: 'break', text: 'A short walk could make room for your next good idea.' },
@@ -32,6 +33,7 @@ const personas = {
     theme: 'bossy',
     introduction: 'I’m Dost. Let’s make your day count.',
     palette: { body: '#f28f75', line: '#693e45', shine: '#fff0e8', blush: '#d87572' },
+    face: { brows: 'confident' },
     messages: {
       suggestions: [
         { id: 'walk-break', kind: 'break', text: 'Stand up. Take a 15-minute walk. Your code will still be here.' },

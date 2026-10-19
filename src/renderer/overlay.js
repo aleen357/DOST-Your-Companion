@@ -3,7 +3,7 @@ const closeButton = document.querySelector('#close-button');
 
 function renderReminder(presentation) {
   if (!presentation?.persona || typeof presentation.message !== 'string') return;
-  window.DostSlime.mount(document.querySelector('#slime-mount'), presentation.persona.id);
+  window.DostSlime.mount(document.querySelector('#slime-mount'), presentation.persona.id, { emotion: presentation.emotion });
   const label = document.querySelector('#persona-label');
   const dot = document.createElement('span');
   dot.className = 'persona-dot';
