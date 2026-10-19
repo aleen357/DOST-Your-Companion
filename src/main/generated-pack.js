@@ -23,6 +23,10 @@ function cleanTalk(value) {
   const text = value.replace(/\s+/g, ' ').trim().replace(/^["“]|["”]$/g, '');
   if (text.length < 8 || text.length > 200) return null;
   if (/https?:\/\/|www\.|[<>{}]/i.test(text)) return null;
+  // The quiz's trait words are for the model only; a line that labels the person is dropped.
+  if (/procrastinat|pushover|overthink|spiral/i.test(text)) return null;
+  // Lines that reuse the prompt's old tone examples or shame the person are dropped too.
+  if (/there is no tomorrow|you are failing|you always|you said|you told me|panic attack|(you're|you are)( \w+){1,4} again|put (it|things|this) off again/i.test(text)) return null;
   return text;
 }
 

@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, nativeImage, screen, Tray, Menu } = require
 const path = require('node:path');
 const { questions } = require('../shared/questions');
 const { questions: legacyQuestions } = require('../shared/questions-v1');
+const { questions: v2Questions } = require('../shared/questions-v2');
 const { createGuestStore } = require('./guest-store');
 const { addScore, choosePersona } = require('./persona');
 const { selectLocalPack, selectReminder } = require('./message-selection');
@@ -147,7 +148,7 @@ function dismissReminder(action) {
 
 function getIncubationState() {
   const guest = guestStore.get();
-  const activeQuestions = guest.questionnaireVersion === 1 ? legacyQuestions : questions;
+  const activeQuestions = activeQuestionsFor(guest);
   const profile = guest.persona ? getPersona(guest.persona) : null;
   const now = Date.now();
   const sessionQuestions = activeQuestions.filter((question) => question.session === guest.sessionIndex);
@@ -176,6 +177,7 @@ function getIncubationState() {
       prompt: question.prompt,
       helperText: question.helperText || '',
       allowText: Boolean(question.allowText),
+      textPlaceholder: question.textPlaceholder || '',
       canDecline: Boolean(question.canDecline),
       maxSelections: question.maxSelections || null,
       exclusiveOptionIds: question.exclusiveOptionIds || [],
@@ -198,7 +200,9 @@ function getIncubationState() {
 
 ipcMain.handle('dost:get-incubation-state', () => getIncubationState());
 function activeQuestionsFor(guest) {
-  return guest.questionnaireVersion === 1 ? legacyQuestions : questions;
+  if (guest.questionnaireVersion === 1) return legacyQuestions;
+  if (guest.questionnaireVersion === 2) return v2Questions;
+  return questions;
 }
 
 async function hatch(mutator) {
@@ -280,27 +284,31 @@ ipcMain.handle('dost:submit-answer', async (_event, { questionId, answer }) => {
   if (guest.persona || guest.sessionIndex >= 3 || (guest.connectAvailableAt && Date.now() < guest.connectAvailableAt)) {
     throw new Error('Connect is not available yet');
   }
-  const activeQuestions = guest.questionnaireVersion === 1 ? legacyQuestions : questions;
+  const activeQuestions = activeQuestionsFor(guest);
   const question = activeQuestions.find((item) => item.id === questionId && item.session === guest.sessionIndex);
   if (!question || guest.answers[questionId]) throw new Error('Question is not available');
 
   let selectedOption;
   let selectedOptions = [];
   let text;
-  if (question.type === 'choice') {
+  const optionalText = question.allowText && typeof answer.text === 'string' ? answer.text.trim().slice(0, 240) : '';
+  if (question.type === 'choice' || question.type === 'choice-text') {
     selectedOption = question.options.find((option) => option.id === answer.optionId);
-    if (!selectedOption) throw new Error('Choose one of the available answers');
+    if (!selectedOption && !(question.allowText && answer.optionId == null && optionalText)) {
+      throw new Error(question.allowText ? 'Choose an answer or write your own' : 'Choose one of the available answers');
+    }
+    text = optionalText;
   } else if (question.type === 'multi') {
     if (!Array.isArray(answer.optionIds)) throw new Error('Choose at least one answer');
     const uniqueIds = [...new Set(answer.optionIds)];
-    if (uniqueIds.length === 0 || uniqueIds.length > question.maxSelections) throw new Error(`Choose between one and ${question.maxSelections} answers`);
+    if (uniqueIds.length > question.maxSelections) throw new Error(`Choose up to ${question.maxSelections} answers`);
+    if (uniqueIds.length === 0 && !optionalText) {
+      throw new Error(question.allowText ? 'Choose an answer or write your own' : `Choose between one and ${question.maxSelections} answers`);
+    }
     if (uniqueIds.some((id) => question.exclusiveOptionIds?.includes(id)) && uniqueIds.length > 1) throw new Error('Choose the “none” answer by itself');
     selectedOptions = uniqueIds.map((optionId) => question.options.find((option) => option.id === optionId));
     if (selectedOptions.some((option) => !option)) throw new Error('Choose only the answers shown');
-  } else if (question.type === 'choice-text') {
-    selectedOption = question.options.find((option) => option.id === answer.optionId);
-    if (!selectedOption) throw new Error('Choose one of the available answers');
-    text = typeof answer.text === 'string' ? answer.text.trim().slice(0, 240) : '';
+    text = optionalText;
   } else {
     text = typeof answer.text === 'string' ? answer.text.trim().slice(0, 240) : '';
     if (!text && !(question.canDecline && answer.declined === true)) throw new Error('Write a short answer or choose “Prefer not to share”');
@@ -310,15 +318,16 @@ ipcMain.handle('dost:submit-answer', async (_event, { questionId, answer }) => {
     if (question.type === 'choice' || question.type === 'choice-text') {
       draft.answers[question.id] = {
         type: question.type,
-        optionId: selectedOption.id,
-        label: selectedOption.label,
-        ...(question.type === 'choice-text' && text ? { text } : {})
+        optionId: selectedOption?.id ?? null,
+        label: selectedOption?.label ?? null,
+        ...(text ? { text } : {})
       };
     } else if (question.type === 'multi') {
       draft.answers[question.id] = {
         type: 'multi',
         optionIds: selectedOptions.map((option) => option.id),
-        labels: selectedOptions.map((option) => option.label)
+        labels: selectedOptions.map((option) => option.label),
+        ...(text ? { text } : {})
       };
     } else {
       draft.answers[question.id] = { type: 'text', text, declined: Boolean(answer.declined && !text) };

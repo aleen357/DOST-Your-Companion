@@ -9,7 +9,7 @@ const SCHEMA_VERSION = 7;
 function newGuest() {
   return {
     schemaVersion: SCHEMA_VERSION,
-    questionnaireVersion: 2,
+    questionnaireVersion: 3,
     guestId: randomUUID(),
     answers: {},
     sessionIndex: 0,
@@ -35,7 +35,7 @@ function newGuest() {
 
 function isValidGuest(value) {
   return value && value.schemaVersion === SCHEMA_VERSION && typeof value.guestId === 'string' &&
-    value.answers && typeof value.answers === 'object' && [1, 2].includes(value.questionnaireVersion) && Number.isInteger(value.sessionIndex) &&
+    value.answers && typeof value.answers === 'object' && [1, 2, 3].includes(value.questionnaireVersion) && Number.isInteger(value.sessionIndex) &&
     value.sessionIndex >= 0 && value.sessionIndex <= 3 && Array.isArray(value.completedSessions) &&
     value.personaScores && getPersonaIds().every((id) => Number.isFinite(value.personaScores[id])) &&
     (value.reminderRemainingMs === null || (Number.isFinite(value.reminderRemainingMs) && value.reminderRemainingMs >= 0)) &&

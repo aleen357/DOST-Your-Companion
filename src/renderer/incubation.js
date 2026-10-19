@@ -118,7 +118,7 @@ byId('continue-button').addEventListener('click', async () => {
   const answer = question.type === 'choice' || question.type === 'choice-text'
     ? { optionId: selectedOptionId, text: byId('text-answer').value }
     : question.type === 'multi'
-      ? { optionIds: [...selectedOptionIds] }
+      ? { optionIds: [...selectedOptionIds], text: byId('text-answer').value }
       : { text: byId('text-answer').value, declined: textDeclined };
   byId('form-error').textContent = '';
   try {
@@ -192,7 +192,8 @@ function render() {
     const hasText = question.type === 'text' || question.allowText;
     byId('text-answer').hidden = !hasText;
     byId('text-answer-label').hidden = !hasText;
-    byId('text-answer-label').textContent = question.allowText ? 'A little more (optional)' : 'Your answer';
+    byId('text-answer-label').textContent = question.allowText ? 'In your own words (optional)' : 'Your answer';
+    byId('text-answer').placeholder = question.textPlaceholder || 'A few words is plenty.';
     byId('text-answer').value = '';
     byId('decline-answer').hidden = !question.canDecline;
     byId('decline-answer').textContent = 'Prefer not to share';
@@ -200,6 +201,13 @@ function render() {
     selectedOptionIds = new Set();
     textDeclined = false;
     byId('continue-button').disabled = true;
+    const updateContinue = () => {
+      const hasTyped = Boolean(byId('text-answer').value.trim());
+      const hasChoice = question.type === 'multi' ? selectedOptionIds.size > 0 : Boolean(selectedOptionId);
+      byId('continue-button').disabled = question.type === 'text'
+        ? !hasTyped && !textDeclined
+        : !hasChoice && !(question.allowText && hasTyped);
+    };
     if (question.type === 'choice' || question.type === 'choice-text' || question.type === 'multi') {
       const isMulti = question.type === 'multi';
       byId('continue-button').disabled = true;
@@ -236,21 +244,19 @@ function render() {
               button.setAttribute('aria-pressed', 'true');
             }
             byId('form-error').textContent = '';
-            byId('continue-button').disabled = selectedOptionIds.size === 0;
           } else {
-            selectedOptionId = option.id;
-            optionContainer.querySelectorAll('.answer-option').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
-            byId('continue-button').disabled = false;
+            // Clicking the picked answer again clears it, so the typed answer can stand alone.
+            selectedOptionId = selectedOptionId === option.id && question.allowText ? null : option.id;
+            optionContainer.querySelectorAll('.answer-option').forEach((item) => item.setAttribute('aria-pressed', String(item.dataset.optionId === selectedOptionId)));
           }
+          updateContinue();
         });
         optionContainer.append(button);
       }
     }
     byId('text-answer').oninput = () => {
       textDeclined = false;
-      byId('continue-button').disabled = question.type === 'text'
-        ? !byId('text-answer').value.trim()
-        : !selectedOptionId;
+      updateContinue();
     };
     byId('decline-answer').onclick = () => {
       textDeclined = true;
