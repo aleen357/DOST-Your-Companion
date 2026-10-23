@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, nativeImage, screen, Tray, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, nativeImage, screen, Tray, Menu, Notification } = require('electron');
 const path = require('node:path');
 const { questions } = require('../shared/questions');
 const { questions: legacyQuestions } = require('../shared/questions-v1');
@@ -258,6 +258,7 @@ ipcMain.handle('dost:generate-local-pack', async () => {
         status: 'generated', model: localModel.MODEL, scorePersona, inferredPersona: generated.inferredPersona, at: Date.now()
       };
     });
+    notifyDostReady();
     return { status: 'generated', state: getIncubationState() };
   } finally {
     generationInProgress = false;
@@ -459,6 +460,24 @@ function createTray() {
     { label: 'Quit DOST', click: () => app.quit() }
   ]));
   tray.on('double-click', () => showMainWindow());
+}
+
+// The model can take a minute or two, so if the user looked away, tell them the egg is ready to open.
+function notifyDostReady() {
+  if (mainWindow && !mainWindow.isDestroyed() && mainWindow.isVisible() && mainWindow.isFocused()) return;
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.flashFrame(true);
+    mainWindow.once('focus', () => mainWindow?.flashFrame(false));
+  }
+  const title = 'Your DOST is ready!';
+  const body = 'Come say hello.';
+  if (Notification.isSupported()) {
+    const notification = new Notification({ title, body });
+    notification.on('click', () => showMainWindow());
+    notification.show();
+  } else {
+    tray?.displayBalloon({ title, content: body });
+  }
 }
 
 function showMainWindow() {

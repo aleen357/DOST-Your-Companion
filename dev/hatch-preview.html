@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DOST hatch preview</title>
+  <link rel="stylesheet" href="../src/renderer/styles.css">
+</head>
+<body class="incubation-page">
+  <!--
+    Loads the real incubation markup and script with a fake window.dost, so the egg and hatch
+    flow can be checked in a browser. Query options: ?q=0..15 answered questions (default 15),
+    ?persona=chill|bossy, ?wait=seconds the fake model takes (default 5).
+  -->
+  <script>
+    (async () => {
+      const params = new URLSearchParams(location.search);
+      const answered = Number(params.get('q') ?? 15);
+      const personaId = params.get('persona') || 'chill';
+      const waitMs = Number(params.get('wait') ?? 5) * 1000;
+      const load = (src) => new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.body.append(script);
+      });
+
+      const page = await (await fetch('../src/renderer/incubation.html')).text();
+      const markup = new DOMParser().parseFromString(page, 'text/html').body;
+      markup.querySelectorAll('script').forEach((script) => script.remove());
+      document.body.prepend(...markup.childNodes);
+
+      await load('../src/shared/personas.js');
+      const persona = window.DostPersonas.getPersona(personaId);
+      const pending = answered >= 15;
+      let state = {
+        developerMode: true, completedQuestions: answered, totalQuestions: 15, completedSessions: Math.floor(answered / 5),
+        sessionIndex: Math.floor(answered / 5), hatched: false, hatchPending: pending, canConnect: !pending, waitRemainingMs: 0,
+        question: null, recovered: false, localModelName: 'qwen3.5:4b', localGeneration: null
+      };
+      const hatched = () => ({ ...state, hatched: true, hatchPending: false, personaConfig: persona, reminderRemainingMs: 120000 });
+      window.dost = {
+        getIncubationState: async () => state,
+        checkLocalModel: async () => ({ status: 'ready', model: 'qwen3.5:4b' }),
+        generateLocalPack: async () => {
+          await new Promise((resolve) => setTimeout(resolve, waitMs));
+          state = hatched();
+          return { status: 'generated', state };
+        },
+        skipLocalGeneration: async () => { state = hatched(); return { status: 'skipped', state }; },
+        resetIncubation: async () => location.reload(),
+        showReminderPreview: () => {},
+        submitAnswer: async () => state
+      };
+
+      await load('../src/renderer/slime.js');
+      await load('../src/renderer/incubation.js');
+    })();
+  </script>
+</body>
+</html>

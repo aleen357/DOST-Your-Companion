@@ -5,6 +5,7 @@ const resetButton = byId('reset-button');
 const generatePreviewButton = byId('generate-preview-button');
 const skipPreviewButton = byId('skip-preview-button');
 const checkAgainButton = byId('check-again-button');
+const helloButton = byId('hello-button');
 const feedback = byId('feedback');
 const questionPanel = byId('question-panel');
 let state;
@@ -13,6 +14,9 @@ let selectedOptionId = null;
 let selectedOptionIds = new Set();
 let textDeclined = false;
 let localSetup = null;
+// Hatch reveal, kept in the renderer: 'brewing' (model writing) → 'ready' (Hello shown) → 'cracking' → null.
+let revealStage = null;
+let dostArriving = false;
 
 previewButton.addEventListener('click', () => {
   window.dost.showReminderPreview();
@@ -20,12 +24,13 @@ previewButton.addEventListener('click', () => {
 });
 
 skipPreviewButton.addEventListener('click', async () => {
-  setPreviewChoiceBusy(true, 'Hatching with DOST’s prepared messages…');
+  setPreviewChoiceBusy(true);
   try {
     const result = await window.dost.skipLocalGeneration();
     state = result.state;
     sessionOpen = false;
-    feedback.textContent = 'DOST hatched with its prepared messages.';
+    revealStage = 'ready';
+    feedback.textContent = '';
     render();
   } catch (error) {
     byId('ai-preview-status').textContent = error.message || 'DOST could not hatch yet. Please try again.';
@@ -35,14 +40,18 @@ skipPreviewButton.addEventListener('click', async () => {
 });
 
 generatePreviewButton.addEventListener('click', async () => {
-  setPreviewChoiceBusy(true, 'DOST is reading your answers and writing its lines on this PC… this can take a minute or two.');
+  setPreviewChoiceBusy(true);
+  revealStage = 'brewing';
+  feedback.textContent = '';
+  render();
   let keepMessage = false;
   try {
     const result = await window.dost.generateLocalPack();
     state = result.state;
+    revealStage = result.status === 'generated' ? 'ready' : null;
     if (result.status === 'generated') {
       sessionOpen = false;
-      feedback.textContent = 'DOST hatched with messages it wrote just for you, on this PC.';
+      feedback.textContent = '';
     } else if (result.status === 'failed') {
       keepMessage = true;
       byId('ai-preview-status').textContent = `The local model didn’t finish (${result.error}). Try again, or hatch with prepared messages.`;
@@ -52,13 +61,31 @@ generatePreviewButton.addEventListener('click', async () => {
     render();
   } catch (error) {
     keepMessage = true;
+    revealStage = null;
     byId('ai-preview-status').textContent = error.message || 'DOST could not start writing its messages.';
+    render();
   } finally {
     setPreviewChoiceBusy(false, keepMessage ? byId('ai-preview-status').textContent : '');
   }
 });
 
 checkAgainButton.addEventListener('click', () => refreshLocalSetup());
+
+const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+helloButton.addEventListener('click', async () => {
+  if (revealStage !== 'ready') return;
+  revealStage = 'cracking';
+  render();
+  const stage = byId('egg-stage');
+  await wait(900);
+  stage.classList.add('is-open');
+  await wait(550);
+  stage.classList.remove('is-open');
+  revealStage = null;
+  dostArriving = true;
+  render();
+});
 
 async function refreshLocalSetup() {
   try {
@@ -152,16 +179,26 @@ function render() {
   byId('progress-label').textContent = state.hatched ? 'Your DOST has hatched' : state.hatchPending ? 'Ready for one last choice' : '15 little moments until hatch';
   byId('recovery-note').hidden = !state.recovered;
   byId('recovery-note').textContent = 'I couldn’t read your earlier local progress, so I started a fresh egg.';
-  byId('egg-stage').hidden = state.hatched || state.hatchPending;
-  byId('hatch-panel').hidden = !state.hatched;
-  byId('hatch-choice-panel').hidden = !state.hatchPending;
+  const revealing = Boolean(revealStage);
+  const showDost = state.hatched && !revealing;
+  const eggStage = byId('egg-stage');
+  byId('egg').style.setProperty('--egg-fill', `${(count / state.totalQuestions) * 100}%`);
+  eggStage.hidden = (state.hatched || state.hatchPending) && !revealing;
+  eggStage.classList.toggle('is-brewing', revealStage === 'brewing');
+  eggStage.classList.toggle('is-ready', revealStage === 'ready');
+  eggStage.classList.toggle('is-cracking', revealStage === 'cracking');
+  byId('egg-status').hidden = revealStage !== 'brewing';
+  helloButton.hidden = revealStage !== 'ready';
+  for (const id of ['main-eyebrow', 'main-title', 'intro', 'effort-row', 'effort-track']) byId(id).hidden = showDost || revealing;
+  byId('hatch-panel').hidden = !showDost;
+  byId('hatch-choice-panel').hidden = !state.hatchPending || revealing;
   if (state.hatchPending) {
     if (!localSetup) refreshLocalSetup();
     renderSetupGuide();
     skipPreviewButton.textContent = state.localGeneration?.status === 'failed' ? 'Hatch with prepared messages' : 'Skip and hatch DOST';
     generatePreviewButton.textContent = state.localGeneration?.status === 'failed' ? 'Try again' : 'Write my messages';
   }
-  connectButton.hidden = state.hatched || state.hatchPending;
+  connectButton.hidden = state.hatched || state.hatchPending || revealing;
   byId('intro').textContent = state.hatchPending
     ? 'One last choice before your DOST hatches.'
     : state.hatched ? 'A little friend, shaped around what matters to you.' : 'Your DOST is getting ready to meet you.';
@@ -266,7 +303,7 @@ function render() {
     };
   }
 
-  if (state.hatched) renderHatch();
+  if (showDost) renderHatch();
 }
 
 function formatReminderTime(ms) {
@@ -287,49 +324,15 @@ function renderDeveloperTimer() {
     : `Next reminder in: ${formatReminderTime(state?.reminderRemainingMs)}`;
 }
 
+// After hatching, the screen is just DOST with its default animation, its name and one hello line.
 function renderHatch() {
   const profile = state.personaConfig;
+  const slime = byId('hatch-slime');
   byId('hatch-persona').textContent = `${profile.name.toUpperCase()} · ${profile.label.toUpperCase()}`;
   byId('hatch-title').textContent = profile.introduction;
-  window.DostSlime.mount(byId('hatch-slime'), profile.id);
-  const encouragement = state.messagePack.encouragement[0];
-  byId('hatch-message').textContent = encouragement.text;
-  const pack = byId('hatch-pack');
-  pack.replaceChildren();
-  for (const message of state.messagePack.suggestions) {
-    const chip = document.createElement('span');
-    chip.className = 'message-chip';
-    chip.textContent = message.text;
-    pack.append(chip);
-  }
-  renderAiSample();
-}
-
-function renderAiSample() {
-  const panel = byId('ai-sample');
-  panel.replaceChildren();
-  const pack = state.messagePack;
-  panel.hidden = pack?.source !== 'local-model';
-  if (panel.hidden) return;
-  const heading = document.createElement('h3');
-  heading.textContent = 'Lines DOST wrote for you';
-  const note = document.createElement('p');
-  note.textContent = `Written on this PC by ${state.localGeneration?.model || 'the local model'} from your answers. DOST will use these in its reminders.`;
-  panel.append(heading, note);
-  for (const [title, key] of [['Nudges', 'suggestions'], ['Wisdom', 'wisdom'], ['Jokes', 'jokes']]) {
-    const group = document.createElement('div');
-    group.className = 'ai-sample-group';
-    const label = document.createElement('h4');
-    label.textContent = title;
-    const list = document.createElement('ul');
-    for (const message of pack[key] || []) {
-      const item = document.createElement('li');
-      item.textContent = message.emotion ? `${message.text}  [${message.emotion}]` : message.text;
-      list.append(item);
-    }
-    group.append(label, list);
-    panel.append(group);
-  }
+  if (slime.dataset.persona !== profile.id) window.DostSlime.mount(slime, profile.id);
+  slime.classList.toggle('is-arriving', dostArriving);
+  dostArriving = false;
 }
 
 async function initialize() {

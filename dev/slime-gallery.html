@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DOST slime gallery</title>
+  <link rel="stylesheet" href="../src/renderer/styles.css">
+  <style>
+    body { background: #fff; font: 12px 'Segoe UI', sans-serif; padding: 16px; }
+    .bar { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+    h2 { margin: 18px 0 6px; font-size: 14px; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .cell { width: 128px; text-align: center; }
+    .m { width: 105px; height: 105px; margin: 16px auto 4px; }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <strong>DOST slime gallery</strong>
+    <label><input type="checkbox" id="force"> Force animations (ignore Windows reduced-motion)</label>
+  </div>
+  <div id="out"></div>
+  <script src="../src/shared/personas.js"></script>
+  <script src="../src/renderer/slime.js"></script>
+  <script>
+    const out = document.getElementById('out');
+    for (const persona of window.DostPersonas.getPersonaIds()) {
+      const title = document.createElement('h2');
+      title.textContent = persona;
+      const row = document.createElement('div');
+      row.className = 'row';
+      for (const emotion of ['', ...window.DostSlime.emotions]) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        const mount = document.createElement('div');
+        mount.className = 'm';
+        cell.append(mount, document.createTextNode(emotion || 'no emotion'));
+        row.append(cell);
+        window.DostSlime.mount(mount, persona, { emotion });
+      }
+      out.append(title, row);
+    }
+
+    // Reduced-motion rules are removed (and restored) so the animations can be previewed on any machine.
+    const removed = [];
+    document.getElementById('force').addEventListener('change', (event) => {
+      const sheet = [...document.styleSheets].find((s) => s.href && s.href.endsWith('styles.css'));
+      if (event.target.checked) {
+        for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+          const rule = sheet.cssRules[i];
+          if (rule.conditionText && rule.conditionText.includes('reduced-motion')) {
+            removed.push(rule.cssText);
+            sheet.deleteRule(i);
+          }
+        }
+      } else {
+        while (removed.length) sheet.insertRule(removed.pop(), sheet.cssRules.length);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -15,19 +15,24 @@
     </header>
 
     <section class="incubation-card" aria-labelledby="main-title">
-      <p class="eyebrow">A small pause, when you need one</p>
+      <p class="eyebrow" id="main-eyebrow">A small pause, when you need one</p>
       <h1 id="main-title">Good things grow<br>one moment at a time.</h1>
       <p class="intro" id="intro">Your DOST is getting ready to meet you.</p>
 
       <div class="egg-stage" id="egg-stage" aria-label="A softly glowing egg">
         <div class="halo"></div>
-        <div class="egg"><span class="egg-shine"></span><span class="egg-speckle one"></span><span class="egg-speckle two"></span></div>
+        <div class="egg" id="egg">
+          <div class="egg-half egg-top"><span class="egg-fill"></span><span class="egg-shine"></span><span class="egg-speckle one"></span></div>
+          <div class="egg-half egg-bottom"><span class="egg-fill"></span><span class="egg-speckle two"></span></div>
+        </div>
         <span class="sparkle sparkle-one" aria-hidden="true">✦</span>
         <span class="sparkle sparkle-two" aria-hidden="true">✧</span>
         <span class="sparkle sparkle-three" aria-hidden="true">·</span>
       </div>
+      <p class="egg-status" id="egg-status" role="status" hidden>Wait, your DOST is coming!</p>
+      <button class="primary-button hello-button" id="hello-button" type="button" hidden>Hello</button>
 
-      <div class="effort-row"><span id="progress-label">15 little moments until hatch</span><span id="progress-count">0 of 15</span></div>
+      <div class="effort-row" id="effort-row"><span id="progress-label">15 little moments until hatch</span><span id="progress-count">0 of 15</span></div>
       <div class="effort-track" id="effort-track" role="progressbar" aria-label="Incubation progress" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0"><span id="progress-fill"></span></div>
       <p class="recovery-note" id="recovery-note" hidden role="status">I couldn't read your earlier local progress, so I started a fresh egg.</p>
       <section class="question-panel" id="question-panel" aria-live="polite" hidden>
@@ -45,9 +50,6 @@
         <div id="hatch-slime" class="hatch-slime" aria-hidden="true"></div>
         <p class="eyebrow" id="hatch-persona">YOUR DOST</p>
         <h2 id="hatch-title">Hello, friend.</h2>
-        <p class="hatch-message" id="hatch-message"></p>
-        <div class="hatch-pack" id="hatch-pack"></div>
-        <section class="ai-sample" id="ai-sample" hidden aria-label="Lines DOST wrote for you"></section>
       </section>
       <section class="hatch-choice-panel" id="hatch-choice-panel" hidden aria-labelledby="hatch-choice-title">
         <p class="eyebrow">READY TO HATCH</p>
