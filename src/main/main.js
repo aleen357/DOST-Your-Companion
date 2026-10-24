@@ -36,7 +36,8 @@ const lightIntervalMs = isDemo ? 50_000 : 50 * 60 * 1000;
 const minimumReminderGapMs = isDemo ? 30_000 : 30 * 60 * 1000;
 const lightMuteMs = isDemo ? 5 * 60 * 1000 : 5 * 60 * 60 * 1000;
 const lightJitterMs = isDemo ? 5_000 : 5 * 60 * 1000;
-const sleepMs = isDemo ? 5 * 60 * 1000 : 5 * 60 * 60 * 1000;
+// Sleep is always a real 5 hours, even in demo/dev; Wake ends it early.
+const sleepMs = 5 * 60 * 60 * 1000;
 
 function makeReminderPresentation(reminder, preview = false, personaId = null) {
   const profile = getPersona(personaId || guestStore.get().persona || 'chill') || getPersona('chill');

@@ -32,7 +32,7 @@ feedButton.addEventListener('click', async () => {
   feedButton.disabled = Boolean(state?.sleepUntil);
 });
 
-// Sleep mutes every reminder for 5 hours (5 minutes in demo/dev); Wake ends it early.
+// Sleep mutes every reminder for 5 hours; Wake ends it early.
 sleepButton.addEventListener('click', async () => {
   const asleep = Boolean(state?.sleepUntil);
   sleepButton.disabled = true;
