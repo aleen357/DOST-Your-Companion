@@ -5,6 +5,11 @@ const OLLAMA_URL = 'http://127.0.0.1:11434';
 const MODEL = 'qwen3.5:4b';
 const SETUP_TIMEOUT_MS = 3_000;
 const GENERATION_TIMEOUT_MS = 240_000;
+// A cold model load can crash Ollama's runner (seen as a 500 from a CUDA init error) and then work
+// on the next try. Server errors get two more attempts, each after a short sleep; timeouts do not.
+const RETRY_DELAYS_MS = [5_000, 10_000];
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function request(pathname, { body, timeoutMs }) {
   const controller = new AbortController();
@@ -16,7 +21,11 @@ async function request(pathname, { body, timeoutMs }) {
       body: body ? JSON.stringify(body) : undefined,
       signal: controller.signal
     });
-    if (!response.ok) throw new Error(`Ollama answered with status ${response.status}.`);
+    if (!response.ok) {
+      const error = new Error(`Ollama answered with status ${response.status}.`);
+      error.status = response.status;
+      throw error;
+    }
     return await response.json();
   } catch (error) {
     if (error.name === 'AbortError') throw new Error('The local model took too long to answer.');
@@ -41,18 +50,27 @@ async function checkSetup() {
   return { status: installed ? 'ready' : 'no-model', model: MODEL };
 }
 
-async function generate(prompt, schema) {
-  const result = await request('/api/chat', {
-    timeoutMs: GENERATION_TIMEOUT_MS,
-    body: {
-      model: MODEL,
-      messages: [{ role: 'user', content: prompt }],
-      format: schema,
-      stream: false,
-      think: false,
-      keep_alive: '1m',
-      options: { temperature: 0.8, num_ctx: 4096, num_predict: 3072 }
+async function chatWithRetry(body) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await request('/api/chat', { timeoutMs: GENERATION_TIMEOUT_MS, body });
+    } catch (error) {
+      if (!(error.status >= 500) || attempt >= RETRY_DELAYS_MS.length) throw error;
+      console.warn(`DOST local model attempt ${attempt + 1} failed: ${error.message} Retrying soon.`);
+      await sleep(RETRY_DELAYS_MS[attempt]);
     }
+  }
+}
+
+async function generate(prompt, schema) {
+  const result = await chatWithRetry({
+    model: MODEL,
+    messages: [{ role: 'user', content: prompt }],
+    format: schema,
+    stream: false,
+    think: false,
+    keep_alive: '1m',
+    options: { temperature: 0.8, num_ctx: 4096, num_predict: 3072 }
   });
   const text = result.message?.content?.trim();
   if (!text) throw new Error('The local model returned no text.');
