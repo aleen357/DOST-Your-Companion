@@ -123,8 +123,10 @@ h1 { margin: 0; color: #283d5a; font: 700 30px/1.24 Manrope, sans-serif; letter-
 .ai-sample-group h4 { margin: 11px 0 4px; color: #71839a; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; }
 .ai-sample-group ul { margin: 0; padding-left: 18px; color: #5d7188; font-size: 13px; line-height: 1.6; }
 
-.overlay-page { width: 100vw; height: 100vh; overflow: hidden; background: transparent; user-select: none; }
-.companion-card { display: flex; align-items: center; gap: 12px; width: 100%; height: 100%; padding: 13px 15px 13px 10px; border: 1px solid #ffffffd9; border-radius: 21px; background: linear-gradient(135deg, #fff 0%, #fbfffd 100%); box-shadow: 0 13px 35px #263b5630, 0 3px 8px #22384b16; animation: card-enter .34s cubic-bezier(.2,.8,.2,1) both; }
+/* The reminder window is transparent, so only the card should paint (not the :root tint). */
+html.overlay-root { background: transparent; }
+.overlay-page { width: 100vw; height: 100vh; padding: 12px; overflow: hidden; background: transparent; user-select: none; }
+.companion-card { display: flex; align-items: center; gap: 12px; width: 100%; height: 100%; padding: 13px 15px 13px 10px; border: 1px solid #e3ebf3; border-radius: 21px; background: linear-gradient(135deg, #fff 0%, #fbfffd 100%); box-shadow: 0 3px 8px #263b5624, 0 1px 3px #22384b14; animation: card-enter .34s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes card-enter { from { opacity: 0; transform: translateY(10px) scale(.975); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .slime-wrap { position: relative; display: grid; flex: 0 0 105px; place-items: center; width: 105px; height: 132px; }
 .slime-mount { position: relative; z-index: 1; width: 105px; height: 105px; }

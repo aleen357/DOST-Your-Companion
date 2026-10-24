@@ -423,9 +423,12 @@ function createReminderWindow() {
   if (reminderWindow && !reminderWindow.isDestroyed()) return reminderWindow;
 
   const workArea = screen.getPrimaryDisplay().workArea;
-  const width = 390;
-  const height = 176;
-  const margin = 18;
+  // The window is larger than the card by a transparent gutter so the card's shadow fades out
+  // instead of being clipped into grey corners. Keep in sync with .overlay-page padding.
+  const gutter = 12;
+  const width = 390 + gutter * 2;
+  const height = 176 + gutter * 2;
+  const margin = 18 - gutter;
 
   reminderWindow = new BrowserWindow({
     x: workArea.x + margin,
