@@ -130,6 +130,40 @@ const ACCESSORIES = {
   }
 };
 
+// Asleep overrides any emotion: closed eyes, a nightcap, floating z's and slow breathing.
+const SLEEPING = {
+  motion: 'sleep',
+  eyes: 'closed',
+  front: `
+    <ellipse class="acc-yawn" cx="56" cy="77" rx="5" ry="6"/>
+    <g class="acc-nightcap"><g transform="rotate(-18 54 24)">
+      <path d="M32 30q4 -18 24 -18q10 0 16 -6q-2 14 -4 24Z" fill="#6c7fd8"/>
+      <path d="M30 30q24 -6 44 0" fill="none" stroke="#f2f4ff" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="72" cy="6" r="4" fill="#f2f4ff"/>
+    </g></g>
+    <g transform="translate(84 44)">
+      <text class="acc-zzz" x="0" y="0" font-size="15" font-weight="800" fill="#5a6fd6">Z</text>
+      <text class="acc-zzz acc-zzz-2" x="9" y="-11" font-size="12" font-weight="800" fill="#7486e0">Z</text>
+      <text class="acc-zzz acc-zzz-3" x="16" y="-21" font-size="9" font-weight="800" fill="#97a5ea">Z</text>
+    </g>`
+};
+
+// Snacks DOST can eat. Each is drawn around (0, 0), about 16 units wide. Add an entry to add a snack.
+const SNACKS = {
+  strawberry: {
+    colour: '#ef4f5f',
+    art: '<path d="M0 -6c6 0 9 3 8 8-1 5-5 8-8 9-3-1-7-4-8-9-1-5 2-8 8-8Z" fill="#ef4f5f"/><path d="M-5 -6l5 2 5-2-2-4-3 1-3-1Z" fill="#4caf50"/><g fill="#ffe08a"><circle cx="-3" cy="0" r=".8"/><circle cx="3" cy="1" r=".8"/><circle cx="0" cy="5" r=".8"/></g>'
+  },
+  cookie: {
+    colour: '#d9a066',
+    art: '<circle r="8" fill="#d9a066"/><circle r="8" fill="none" stroke="#c18a52" stroke-width="1.2"/><g fill="#6b4226"><circle cx="-3" cy="-3" r="1.4"/><circle cx="3" cy="-1" r="1.2"/><circle cx="-1" cy="4" r="1.3"/><circle cx="4" cy="4" r="1"/></g>'
+  },
+  watermelon: {
+    colour: '#ff6b7a',
+    art: '<path d="M-9 -3a9 9 0 0 0 18 0Z" fill="#ff6b7a"/><path d="M-9 -3a9 9 0 0 0 18 0" fill="none" stroke="#5cb85c" stroke-width="2.4"/><g fill="#3b3b4f"><ellipse cx="-3" cy="0" rx=".8" ry="1.2"/><ellipse cx="3" cy="0" rx=".8" ry="1.2"/><ellipse cx="0" cy="3" rx=".8" ry="1.2"/></g>'
+  }
+};
+
 function normalizeEmotion(value) {
   return String(value || '').toUpperCase().replace(/[_-]+/g, ' ').trim();
 }
@@ -139,12 +173,12 @@ function mountSlime(container, persona = 'chill', options = {}) {
   const profile = typeof persona === 'string' ? window.DostPersonas.getPersona(persona) : persona;
   const selected = profile || window.DostPersonas.getPersona('chill');
   const emotion = normalizeEmotion(options.emotion);
-  const accessory = ACCESSORIES[emotion] || {};
+  const accessory = options.sleeping ? SLEEPING : ACCESSORIES[emotion] || {};
   const brows = BROWS[accessory.brows || selected.face?.brows] || '';
   const eyes = EYES[accessory.eyes] || EYES.open;
   const mouth = MOUTHS[accessory.mouth] || MOUTHS.smile;
   container.innerHTML = `
-    <svg class="slime-svg" viewBox="0 0 112 112" aria-hidden="true" focusable="false">
+    <svg class="slime-svg${options.sleeping ? ' is-sleeping' : ''}" viewBox="0 0 112 112" aria-hidden="true" focusable="false">
       <ellipse class="slime-ground-shadow" cx="56" cy="101" rx="30" ry="4"/>
       <g class="slime-hop"><g class="slime-squish"><g class="slime-mood"${accessory.motion ? ` data-motion="${accessory.motion}"` : ''}>
         ${accessory.back || ''}
@@ -152,9 +186,15 @@ function mountSlime(container, persona = 'chill', options = {}) {
         <ellipse class="slime-shine" cx="36" cy="40" rx="10" ry="6" transform="rotate(-35 36 40)"/>
         <circle class="slime-shine" cx="50" cy="32" r="2.4"/>
         <circle class="slime-blush" cx="30" cy="73" r="5"/><circle class="slime-blush" cx="82" cy="73" r="5"/>
-        ${eyes}${brows}${mouth}
+        <g class="slime-eyes-base">${eyes}</g>${brows}<g class="slime-mouth-base">${mouth}</g>
+        <ellipse class="slime-chomp" cx="56" cy="76" rx="4.6" ry="4"/>
+        <g class="slime-happy-eyes"><path class="slime-mouth" d="M37 66q5 -6 10 0"/><path class="slime-mouth" d="M65 66q5 -6 10 0"/></g>
         ${accessory.front || ''}
       </g></g></g>
+      <g class="slime-hearts">
+        <g transform="translate(26 30)"><path class="slime-heart" d="M0 3C-6 -1 -4 -6 0 -3C4 -6 6 -1 0 3Z"/></g>
+        <g transform="translate(86 26)"><path class="slime-heart slime-heart-late" d="M0 3C-6 -1 -4 -6 0 -3C4 -6 6 -1 0 3Z"/></g>
+      </g>
     </svg>`;
   container.dataset.persona = selected.id;
   container.dataset.emotion = ACCESSORIES[emotion] ? emotion : '';
@@ -164,4 +204,27 @@ function mountSlime(container, persona = 'chill', options = {}) {
   container.style.setProperty('--slime-blush', selected.palette.blush);
 }
 
-window.DostSlime = Object.freeze({ mount: mountSlime, emotions: Object.freeze(Object.keys(ACCESSORIES)) });
+// Drops a random snack into DOST's mouth, chews it in three bites, then a happy wiggle with hearts.
+async function feedSlime(container, snackName) {
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const svg = container?.querySelector('.slime-svg');
+  if (!svg || svg.classList.contains('is-eating') || svg.classList.contains('is-sleeping')) return;
+  const names = Object.keys(SNACKS);
+  const snack = SNACKS[snackName] || SNACKS[names[Math.floor(Math.random() * names.length)]];
+  // Four crumbs fly out as DOST bites; their directions live in styles.css (crumb-1..4).
+  const crumbs = [1, 2, 3, 4].map((n) => `<circle class="snack-crumb crumb-${n}" r="1.4" fill="${snack.colour}"/>`).join('');
+  svg.insertAdjacentHTML('beforeend', `<g class="slime-snack" transform="translate(56 78)"><g class="snack-drop"><g class="snack-bites">${snack.art}</g></g>${crumbs}</g>`);
+  svg.classList.add('is-eating');
+  await wait(1900);
+  svg.querySelector('.slime-snack')?.remove();
+  svg.classList.replace('is-eating', 'is-happy');
+  await wait(1500);
+  svg.classList.remove('is-happy');
+}
+
+window.DostSlime = Object.freeze({
+  mount: mountSlime,
+  feed: feedSlime,
+  emotions: Object.freeze(Object.keys(ACCESSORIES)),
+  snacks: Object.freeze(Object.keys(SNACKS))
+});

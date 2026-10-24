@@ -9,11 +9,6 @@
 </head>
 <body class="incubation-page">
   <main class="shell">
-    <header class="topbar">
-      <div class="brand"><span class="brand-mark" aria-hidden="true">d</span><span>DOST</span></div>
-      <span class="stage-pill"><span class="status-dot"></span> A little companion for your day</span>
-    </header>
-
     <section class="incubation-card" aria-labelledby="main-title">
       <p class="eyebrow" id="main-eyebrow">A small pause, when you need one</p>
       <h1 id="main-title">Good things grow<br>one moment at a time.</h1>
@@ -30,6 +25,7 @@
         <span class="sparkle sparkle-three" aria-hidden="true">·</span>
       </div>
       <p class="egg-status" id="egg-status" role="status" hidden>Wait, your DOST is coming!</p>
+      <button class="primary-button hello-button" id="go-button" type="button" hidden>Let’s Go</button>
       <button class="primary-button hello-button" id="hello-button" type="button" hidden>Hello</button>
 
       <div class="effort-row" id="effort-row"><span id="progress-label">15 little moments until hatch</span><span id="progress-count">0 of 15</span></div>
@@ -50,26 +46,18 @@
         <div id="hatch-slime" class="hatch-slime" aria-hidden="true"></div>
         <p class="eyebrow" id="hatch-persona">YOUR DOST</p>
         <h2 id="hatch-title">Hello, friend.</h2>
-      </section>
-      <section class="hatch-choice-panel" id="hatch-choice-panel" hidden aria-labelledby="hatch-choice-title">
-        <p class="eyebrow">READY TO HATCH</p>
-        <h2 id="hatch-choice-title">Your DOST is ready.</h2>
-        <p class="hatch-message">DOST can read your answers and write its own nudges, wisdom and jokes just for you — using a small AI model that runs on this PC.</p>
-        <div class="ai-disclosure" id="ai-disclosure">
-          <h3>How your answers are used</h3>
-          <p>If you choose <strong>Write my messages</strong>, DOST sends your saved answers to Ollama, a model runtime running on this computer (<code>127.0.0.1</code>). Nothing is sent to a cloud service, and DOST keeps no copy of the prompt — only the finished messages are saved on this PC.</p>
-          <p>It can take a minute or two the first time. You can also skip and hatch with DOST’s prepared messages.</p>
+        <div class="care-actions">
+          <button class="care-button" id="feed-button" type="button">
+            <span class="care-circle" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 7c6 0 9 3 8 8-1 5-5 8-8 9-3-1-7-4-8-9-1-5 2-8 8-8Z" fill="#ef4f5f"/><path d="M7 7l5 2 5-2-2-4-3 1-3-1Z" fill="#4caf50"/><g fill="#ffe08a"><circle cx="9" cy="13" r="1"/><circle cx="15" cy="14" r="1"/><circle cx="12" cy="18" r="1"/></g></svg></span>
+            <span>Feed</span>
+          </button>
+          <button class="care-button" id="sleep-button" type="button" aria-pressed="false">
+            <span class="care-circle" aria-hidden="true" id="sleep-icon"></span>
+            <span id="sleep-label">Sleep</span>
+          </button>
         </div>
-        <div class="ai-key-warning" id="setup-guide" hidden>
-          <p id="setup-text"></p>
-          <p><code id="setup-command"></code></p>
-        </div>
-        <p class="form-error" id="ai-preview-status" role="status" aria-live="polite"></p>
-        <div class="hatch-choice-actions">
-          <button class="primary-button" id="generate-preview-button" type="button">Write my messages</button>
-          <button class="secondary-button" id="check-again-button" type="button" hidden>Check again</button>
-          <button class="secondary-button" id="skip-preview-button" type="button">Skip and hatch DOST</button>
-        </div>
+        <p class="sleep-note" id="sleep-note" role="status" hidden></p>
+        <section class="ai-sample" id="ai-sample" hidden aria-label="Lines DOST wrote for you"></section>
       </section>
       <div class="card-footer">
         <p id="footer-copy">For now, meet your little desk friend.</p>

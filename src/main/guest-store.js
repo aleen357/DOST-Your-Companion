@@ -29,7 +29,8 @@ function newGuest() {
     nextLightKind: 'random',
     usedLightMessageIds: [],
     usedHabitMessageIds: [],
-    localGeneration: null
+    localGeneration: null,
+    sleepUntil: null
   };
 }
 

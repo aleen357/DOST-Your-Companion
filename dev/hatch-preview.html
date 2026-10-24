@@ -48,6 +48,7 @@
           return { status: 'generated', state };
         },
         skipLocalGeneration: async () => { state = hatched(); return { status: 'skipped', state }; },
+        setSleep: async (asleep) => { state = { ...state, sleepUntil: asleep ? Date.now() + 5 * 60 * 1000 : null }; return state; },
         resetIncubation: async () => location.reload(),
         showReminderPreview: () => {},
         submitAnswer: async () => state

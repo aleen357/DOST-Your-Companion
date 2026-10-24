@@ -2,9 +2,7 @@ const byId = (id) => document.getElementById(id);
 const previewButton = byId('preview-button');
 const connectButton = byId('connect-button');
 const resetButton = byId('reset-button');
-const generatePreviewButton = byId('generate-preview-button');
-const skipPreviewButton = byId('skip-preview-button');
-const checkAgainButton = byId('check-again-button');
+const goButton = byId('go-button');
 const helloButton = byId('hello-button');
 const feedback = byId('feedback');
 const questionPanel = byId('question-panel');
@@ -13,63 +11,66 @@ let sessionOpen = false;
 let selectedOptionId = null;
 let selectedOptionIds = new Set();
 let textDeclined = false;
-let localSetup = null;
 // Hatch reveal, kept in the renderer: 'brewing' (model writing) → 'ready' (Hello shown) → 'cracking' → null.
 let revealStage = null;
 let dostArriving = false;
+const feedButton = byId('feed-button');
+const sleepButton = byId('sleep-button');
+let feeding = false;
+let dostWaking = false;
+let dostDozing = false;
+let wakeTimer = null;
+const MOON_ICON = '<svg viewBox="0 0 24 24"><path d="M15 3a9 9 0 1 0 6 15A8 8 0 0 1 15 3Z" fill="#6c7fd8"/><circle cx="18" cy="6" r="1.2" fill="#b0bbef"/></svg>';
+const SUN_ICON = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="#ffc94a"/><g stroke="#ffc94a" stroke-width="2" stroke-linecap="round"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></g></svg>';
+
+feedButton.addEventListener('click', async () => {
+  if (feeding || state?.sleepUntil) return;
+  feeding = true;
+  feedButton.disabled = true;
+  await window.DostSlime.feed(byId('hatch-slime'));
+  feeding = false;
+  feedButton.disabled = Boolean(state?.sleepUntil);
+});
+
+// Sleep mutes every reminder for 5 hours (5 minutes in demo/dev); Wake ends it early.
+sleepButton.addEventListener('click', async () => {
+  const asleep = Boolean(state?.sleepUntil);
+  sleepButton.disabled = true;
+  try {
+    state = await window.dost.setSleep(!asleep);
+    dostWaking = asleep;
+    dostDozing = !asleep;
+    render();
+  } catch (error) {
+    feedback.textContent = error.message || 'DOST couldn’t change its nap right now.';
+  } finally {
+    sleepButton.disabled = false;
+  }
+});
 
 previewButton.addEventListener('click', () => {
   window.dost.showReminderPreview();
   feedback.textContent = 'Your companion preview is open above your other windows.';
 });
 
-skipPreviewButton.addEventListener('click', async () => {
-  setPreviewChoiceBusy(true);
-  try {
-    const result = await window.dost.skipLocalGeneration();
-    state = result.state;
-    sessionOpen = false;
-    revealStage = 'ready';
-    feedback.textContent = '';
-    render();
-  } catch (error) {
-    byId('ai-preview-status').textContent = error.message || 'DOST could not hatch yet. Please try again.';
-  } finally {
-    setPreviewChoiceBusy(false);
-  }
-});
-
-generatePreviewButton.addEventListener('click', async () => {
-  setPreviewChoiceBusy(true);
+// Let's Go: use the local model if it is set up and finishes; otherwise hatch with the prepared bank.
+goButton.addEventListener('click', async () => {
+  if (revealStage) return;
   revealStage = 'brewing';
   feedback.textContent = '';
   render();
-  let keepMessage = false;
   try {
-    const result = await window.dost.generateLocalPack();
+    let result = await window.dost.generateLocalPack();
+    if (result.status !== 'generated') result = await window.dost.skipLocalGeneration();
     state = result.state;
-    revealStage = result.status === 'generated' ? 'ready' : null;
-    if (result.status === 'generated') {
-      sessionOpen = false;
-      feedback.textContent = '';
-    } else if (result.status === 'failed') {
-      keepMessage = true;
-      byId('ai-preview-status').textContent = `The local model didn’t finish (${result.error}). Try again, or hatch with prepared messages.`;
-    } else {
-      localSetup = { status: result.status, model: state.localModelName };
-    }
-    render();
+    sessionOpen = false;
+    revealStage = 'ready';
   } catch (error) {
-    keepMessage = true;
     revealStage = null;
-    byId('ai-preview-status').textContent = error.message || 'DOST could not start writing its messages.';
-    render();
-  } finally {
-    setPreviewChoiceBusy(false, keepMessage ? byId('ai-preview-status').textContent : '');
+    feedback.textContent = error.message || 'DOST could not hatch yet. Please try again.';
   }
+  render();
 });
-
-checkAgainButton.addEventListener('click', () => refreshLocalSetup());
 
 const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
@@ -86,37 +87,6 @@ helloButton.addEventListener('click', async () => {
   dostArriving = true;
   render();
 });
-
-async function refreshLocalSetup() {
-  try {
-    localSetup = await window.dost.checkLocalModel();
-  } catch {
-    localSetup = { status: 'no-ollama', model: state?.localModelName };
-  }
-  if (state) render();
-}
-
-function renderSetupGuide() {
-  const ready = localSetup?.status === 'ready';
-  const known = Boolean(localSetup);
-  byId('setup-guide').hidden = !known || ready;
-  checkAgainButton.hidden = !known || ready;
-  generatePreviewButton.disabled = !ready;
-  if (!known || ready) return;
-  if (localSetup.status === 'no-ollama') {
-    byId('setup-text').textContent = 'DOST couldn’t find Ollama on this PC. Install Ollama for Windows from ollama.com, start it, download the model, then choose Check again.';
-  } else {
-    byId('setup-text').textContent = 'Ollama is running, but DOST’s model isn’t downloaded yet. Run this once in a terminal, then choose Check again:';
-  }
-  byId('setup-command').textContent = `ollama pull ${localSetup.model}`;
-}
-
-function setPreviewChoiceBusy(busy, message = '') {
-  generatePreviewButton.disabled = busy || localSetup?.status !== 'ready';
-  skipPreviewButton.disabled = busy;
-  checkAgainButton.disabled = busy;
-  byId('ai-preview-status').textContent = message;
-}
 
 connectButton.addEventListener('click', () => {
   if (!state?.canConnect) return;
@@ -176,34 +146,28 @@ function render() {
   byId('progress-count').textContent = `${count} of ${state.totalQuestions}`;
   byId('progress-fill').style.width = `${(count / state.totalQuestions) * 100}%`;
   byId('effort-track').setAttribute('aria-valuenow', String(count));
-  byId('progress-label').textContent = state.hatched ? 'Your DOST has hatched' : state.hatchPending ? 'Ready for one last choice' : '15 little moments until hatch';
+  byId('progress-label').textContent = state.hatched ? 'Your DOST has hatched' : state.hatchPending ? 'Your egg is full' : '15 little moments until hatch';
   byId('recovery-note').hidden = !state.recovered;
   byId('recovery-note').textContent = 'I couldn’t read your earlier local progress, so I started a fresh egg.';
   const revealing = Boolean(revealStage);
   const showDost = state.hatched && !revealing;
   const eggStage = byId('egg-stage');
   byId('egg').style.setProperty('--egg-fill', `${(count / state.totalQuestions) * 100}%`);
-  eggStage.hidden = (state.hatched || state.hatchPending) && !revealing;
+  eggStage.hidden = state.hatched && !revealing;
   eggStage.classList.toggle('is-brewing', revealStage === 'brewing');
   eggStage.classList.toggle('is-ready', revealStage === 'ready');
   eggStage.classList.toggle('is-cracking', revealStage === 'cracking');
   byId('egg-status').hidden = revealStage !== 'brewing';
   helloButton.hidden = revealStage !== 'ready';
+  goButton.hidden = !state.hatchPending || revealing;
   for (const id of ['main-eyebrow', 'main-title', 'intro', 'effort-row', 'effort-track']) byId(id).hidden = showDost || revealing;
   byId('hatch-panel').hidden = !showDost;
-  byId('hatch-choice-panel').hidden = !state.hatchPending || revealing;
-  if (state.hatchPending) {
-    if (!localSetup) refreshLocalSetup();
-    renderSetupGuide();
-    skipPreviewButton.textContent = state.localGeneration?.status === 'failed' ? 'Hatch with prepared messages' : 'Skip and hatch DOST';
-    generatePreviewButton.textContent = state.localGeneration?.status === 'failed' ? 'Try again' : 'Write my messages';
-  }
   connectButton.hidden = state.hatched || state.hatchPending || revealing;
   byId('intro').textContent = state.hatchPending
-    ? 'One last choice before your DOST hatches.'
+    ? 'Your DOST is ready to meet you.'
     : state.hatched ? 'A little friend, shaped around what matters to you.' : 'Your DOST is getting ready to meet you.';
   byId('footer-copy').textContent = state.hatchPending
-    ? 'Your answers only go to the model running on this PC.'
+    ? 'Your answers stay on this PC.'
     : state.hatched ? 'Your answers and DOST stay on this PC.' : 'Your answers stay on this PC. No account needed.';
 
   const question = state.question;
@@ -330,9 +294,72 @@ function renderHatch() {
   const slime = byId('hatch-slime');
   byId('hatch-persona').textContent = `${profile.name.toUpperCase()} · ${profile.label.toUpperCase()}`;
   byId('hatch-title').textContent = profile.introduction;
-  if (slime.dataset.persona !== profile.id) window.DostSlime.mount(slime, profile.id);
+  const asleep = Boolean(state.sleepUntil);
+  const look = `${profile.id}:${asleep ? 'asleep' : 'awake'}`;
+  if (slime.dataset.look !== look && !feeding) {
+    window.DostSlime.mount(slime, profile.id, { sleeping: asleep });
+    slime.dataset.look = look;
+  }
   slime.classList.toggle('is-arriving', dostArriving);
+  slime.classList.toggle('is-waking', dostWaking);
+  slime.classList.toggle('is-dozing', dostDozing);
   dostArriving = false;
+  dostWaking = false;
+  dostDozing = false;
+  renderCareButtons(asleep);
+  renderAiSample();
+}
+
+function renderCareButtons(asleep) {
+  feedButton.disabled = asleep || feeding;
+  sleepButton.setAttribute('aria-pressed', String(asleep));
+  byId('sleep-icon').innerHTML = asleep ? SUN_ICON : MOON_ICON;
+  byId('sleep-label').textContent = asleep ? 'Wake' : 'Sleep';
+  const note = byId('sleep-note');
+  note.hidden = !asleep;
+  if (asleep) {
+    const until = new Date(state.sleepUntil).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    note.textContent = `DOST is asleep. No reminders until ${until}.`;
+  }
+  // When the nap runs out on its own, wake DOST on screen too.
+  window.clearTimeout(wakeTimer);
+  if (asleep) {
+    wakeTimer = window.setTimeout(async () => {
+      state = await window.dost.getIncubationState();
+      dostWaking = !state.sleepUntil;
+      render();
+    }, Math.max(0, state.sleepUntil - Date.now()) + 500);
+  }
+}
+
+// Developer mode only: list the lines the local model wrote, with their emotion tags.
+function renderAiSample() {
+  const panel = byId('ai-sample');
+  const pack = state.messagePack;
+  panel.hidden = !state.developerMode;
+  panel.replaceChildren();
+  if (panel.hidden) return;
+  const heading = document.createElement('h3');
+  heading.textContent = 'Lines DOST wrote for you';
+  const note = document.createElement('p');
+  note.textContent = pack?.source === 'local-model'
+    ? `Developer view. Written on this PC by ${state.localGeneration?.model || 'the local model'} from your answers.`
+    : `Developer view. The local model didn’t write these (${state.localGeneration?.error || state.localGeneration?.status || 'not run'}), so DOST uses its prepared lines.`;
+  panel.append(heading, note);
+  for (const [title, key] of [['Nudges', 'suggestions'], ['Wisdom', 'wisdom'], ['Jokes', 'jokes'], ['After Okay', 'encouragement'], ['Check-ins (always prepared)', 'followUps']]) {
+    const group = document.createElement('div');
+    group.className = 'ai-sample-group';
+    const label = document.createElement('h4');
+    label.textContent = title;
+    const list = document.createElement('ul');
+    for (const message of pack?.[key] || []) {
+      const item = document.createElement('li');
+      item.textContent = message.emotion ? `${message.text}  [${message.emotion}]` : message.text;
+      list.append(item);
+    }
+    group.append(label, list);
+    panel.append(group);
+  }
 }
 
 async function initialize() {

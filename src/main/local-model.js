@@ -51,7 +51,7 @@ async function generate(prompt, schema) {
       stream: false,
       think: false,
       keep_alive: '1m',
-      options: { temperature: 0.8, num_ctx: 4096, num_predict: 2048 }
+      options: { temperature: 0.8, num_ctx: 4096, num_predict: 3072 }
     }
   });
   const text = result.message?.content?.trim();

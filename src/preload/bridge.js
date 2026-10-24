@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('dost', Object.freeze({
     return () => ipcRenderer.removeListener('dost:reminder-updated', listener);
   },
   resetIncubation: () => ipcRenderer.invoke('dost:reset-incubation'),
+  setSleep: (asleep) => ipcRenderer.invoke('dost:set-sleep', asleep === true),
   submitAnswer: (questionId, answer) => ipcRenderer.invoke('dost:submit-answer', { questionId, answer }),
   dismissReminder: (action) => {
     if (['ok', 'cross'].includes(action)) {

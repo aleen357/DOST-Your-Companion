@@ -2,8 +2,19 @@
 // Works from whichever question definitions are active, so it never hardcodes question IDs.
 
 const EMOTIONS = ['ANGRY', 'ALOOF', 'SCHOLAR', 'ARTIST', 'DANCER', 'CALM', 'QUESTION', 'TIME TICKING', 'STUDENT'];
-const CATEGORIES = ['wisdom', 'nudge', 'joke'];
+const CATEGORIES = ['wisdom', 'nudge', 'joke', 'encouragement'];
 const ITEMS_PER_CATEGORY = 5;
+const EMOTION_GUIDE = [
+  'CALM: gentle, soothing, slow down',
+  'DANCER: happy, celebrating, cheering them on',
+  'STUDENT: learning, studying, practising a skill',
+  'SCHOLAR: wise, thoughtful (most wisdom lines)',
+  'ARTIST: creative work, hobbies, making things',
+  'TIME TICKING: time, deadlines, starting now',
+  'QUESTION: asking them something, or a joke that is a question',
+  'ALOOF: playfully cool, smug, too cool to worry',
+  'ANGRY: fake-grumpy, stern push to act (bossy only, always playful)'
+].join('\n');
 // The model writes one spare line per category, since validation drops lines that label,
 // shame or reuse; DOST keeps the first ITEMS_PER_CATEGORY that pass.
 const REQUESTED_PER_CATEGORY = ITEMS_PER_CATEGORY + 1;
@@ -96,7 +107,10 @@ Set PERSONA to "chill" or "bossy".
 STEP 2 — Write DOST_TALKS in that persona's voice. Write exactly:
 - ${REQUESTED_PER_CATEGORY} items in "wisdom": short wisdom quotes that fit this person's life and goals. Original lines, no author names.
 - ${REQUESTED_PER_CATEGORY} items in "nudge": reminders to do something now (move, water, a real break, start a task, wind down...), based on what they said they want reminders about and what restores them.
-- ${REQUESTED_PER_CATEGORY} items in "joke": real jokes with a setup and a punchline (a pun, a one-liner, or a silly question and answer), clean and light, connected to their days, work, study or hobbies. A joke is meant to make them smile, not to push them. If they picked a favourite kind of joke or shared one, write in that style of humour. Write original jokes about their own days, not well-known jokes.
+- ${REQUESTED_PER_CATEGORY} items in "joke": short jokes that a 10-year-old would get at once. Use a clear pun or wordplay, where the punchline word has two meanings and both make sense, or a simple silly question and answer. Pick topics from their work, study, hobbies or everyday life (coffee, sleep, phones, homework, cooking...). Classic, well-known clean jokes are welcome when they fit. If they picked a favourite kind of joke, use that style. A joke is meant to make them smile, not to push them.
+  Good jokes look like these (do not reuse them): "Why did the scarecrow win an award? He was outstanding in his field." / "I told my laptop I needed a break, so it froze." / "Why are maths books sad? They have too many problems."
+  Before keeping a joke, check: does the punchline clearly answer the setup, and would someone laugh without it being explained? If not, write a different one.
+- ${REQUESTED_PER_CATEGORY} items in "encouragement": warm lines DOST says right after the person taps Okay on a reminder, to say well done for taking that small step. Specific to their life where you can, never generic job titles they did not mention.
 
 Rules for every TALK:
 - Speak directly to the person as DOST ("you"), one or two sentences, under 140 characters.
@@ -109,10 +123,11 @@ Rules for every TALK:
 - All ${REQUESTED_PER_CATEGORY * CATEGORIES.length} TALKs must be different from each other: no repeated idea, joke setup or phrase.
 - Never repeat private details or invent facts, numbers or times about them.
 - No medical, diet or financial advice. No links. No emoji. No hashtags.
-- Give each TALK one EMOTION, the face DOST makes while saying it, chosen from: ${EMOTIONS.join(', ')}.
+- Give each TALK one EMOTION: the face DOST makes while saying it. It must match what the line is about:
+${EMOTION_GUIDE}
 
 Reply with JSON only, in this shape:
-{"PERSONA": "chill", "DOST_TALKS": {"wisdom": [{"TALK": "...", "EMOTION": "CALM"}], "nudge": [...], "joke": [...]}}`;
+{"PERSONA": "chill", "DOST_TALKS": {"wisdom": [{"TALK": "...", "EMOTION": "SCHOLAR"}], "nudge": [...], "joke": [...], "encouragement": [...]}}`;
 
 function buildPrompt({ questionDefinitions, answers, scorePersona }) {
   const profile = formatProfile(questionDefinitions, answers) || '(The person chose not to share details.)';

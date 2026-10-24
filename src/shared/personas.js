@@ -14,7 +14,7 @@ const personas = {
       ],
       encouragement: [
         { id: 'steady-progress', kind: 'encouragement', text: 'Small, steady progress still counts. You are doing okay.' },
-        { id: 'coding-craft', kind: 'encouragement', text: 'Every bug you understand makes you a stronger engineer.' }
+        { id: 'coding-craft', kind: 'encouragement', text: 'Look at you, taking care of yourself. That counts.' }
       ],
       followUps: [{ id: 'did-you-break', kind: 'follow-up', text: 'Hey, did you get a chance to take a little break?' }],
       wisdom: [{ id: 'one-step', kind: 'wisdom', text: 'A small step is still a step toward the thing you want.' }],

@@ -17,6 +17,8 @@ app.setName('DOST');
 let mainWindow;
 let reminderWindow;
 let tray;
+// DOST's face, rendered by dev/make-icon.js. Used for the window, taskbar and tray.
+const appIcon = nativeImage.createFromPath(path.join(__dirname, '../../assets/icon.png'));
 let isQuitting = false;
 let guestStore;
 let generationInProgress = false;
@@ -34,6 +36,7 @@ const lightIntervalMs = isDemo ? 50_000 : 50 * 60 * 1000;
 const minimumReminderGapMs = isDemo ? 30_000 : 30 * 60 * 1000;
 const lightMuteMs = isDemo ? 5 * 60 * 1000 : 5 * 60 * 60 * 1000;
 const lightJitterMs = isDemo ? 5_000 : 5 * 60 * 1000;
+const sleepMs = isDemo ? 5 * 60 * 1000 : 5 * 60 * 60 * 1000;
 
 function makeReminderPresentation(reminder, preview = false, personaId = null) {
   const profile = getPersona(personaId || guestStore.get().persona || 'chill') || getPersona('chill');
@@ -52,11 +55,15 @@ function makeReminderPresentation(reminder, preview = false, personaId = null) {
   };
 }
 
+// Previews show one of this DOST's own saved lines (with its emotion); before hatching, a sample line.
 function previewPresentation() {
-  return makeReminderPresentation({
+  const pack = guestStore?.get().messagePack;
+  const lines = pack ? [...(pack.suggestions || []), ...(pack.wisdom || []), ...(pack.jokes || []), ...(pack.encouragement || [])] : [];
+  const line = lines[Math.floor(Math.random() * lines.length)] || {
     kind: 'break',
     text: 'You’ve done good work. A little water break might help your next idea find its way.'
-  }, true, 'chill');
+  };
+  return makeReminderPresentation(line, true, 'chill');
 }
 
 function getReminderPresentation() {
@@ -72,9 +79,22 @@ function presentReminder(presentation) {
   }
 }
 
+function isAsleep(guest = guestStore.get()) {
+  return Number.isFinite(guest.sleepUntil) && guest.sleepUntil > Date.now();
+}
+
+// A sleeping DOST skips whatever comes due (and drops anything still on screen); the clock moves on.
+async function skipWhileAsleep() {
+  if (guestStore.get().pendingReminder) await guestStore.update((draft) => { draft.pendingReminder = null; });
+  activeReminderPresentation = null;
+  if (reminderWindow && !reminderWindow.isDestroyed()) reminderWindow.hide();
+  reminderClock?.resume();
+}
+
 async function handleReminderDue(lane) {
   const guest = guestStore.get();
   if (!guest.persona || !guest.messagePack) return;
+  if (isAsleep(guest)) return skipWhileAsleep();
 
   let reminder = guest.pendingReminder;
   if (!reminder) {
@@ -194,11 +214,18 @@ function getIncubationState() {
       palette: profile.palette
     } : null,
     scores: guest.personaScores,
-    messagePack: guest.messagePack
+    messagePack: guest.messagePack,
+    sleepUntil: isAsleep(guest) ? guest.sleepUntil : null
   };
 }
 
 ipcMain.handle('dost:get-incubation-state', () => getIncubationState());
+ipcMain.handle('dost:set-sleep', async (_event, asleep) => {
+  if (!guestStore.get().hatchedAt) throw new Error('DOST has not hatched yet.');
+  await guestStore.update((draft) => { draft.sleepUntil = asleep === true ? Date.now() + sleepMs : null; });
+  if (asleep === true) await skipWhileAsleep();
+  return getIncubationState();
+});
 function activeQuestionsFor(guest) {
   if (guest.questionnaireVersion === 1) return legacyQuestions;
   if (guest.questionnaireVersion === 2) return v2Questions;
@@ -226,6 +253,8 @@ ipcMain.handle('dost:skip-local-generation', async () => {
   await hatch((draft) => {
     if (draft.localGeneration?.status !== 'failed') draft.localGeneration = { status: 'skipped', at: Date.now() };
   });
+  // Let's Go falls back here after a slow failed or missing model, so the user may have looked away.
+  notifyDostReady();
   return { status: 'skipped', state: getIncubationState() };
 });
 ipcMain.handle('dost:generate-local-pack', async () => {
@@ -365,6 +394,7 @@ function createMainWindow() {
     minWidth: 760,
     minHeight: 600,
     title: 'DOST',
+    icon: appIcon,
     backgroundColor: '#102447',
     show: false,
     webPreferences: {
@@ -447,8 +477,7 @@ function showReminderPreview() {
 }
 
 function createTray() {
-  const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="10" fill="#76d6b0"/><path d="M5 21c0-6 4-11 11-11s11 5 11 11c0 3-3 5-11 5S5 24 5 21Z" fill="#eafff6"/><circle cx="12" cy="19" r="1.5" fill="#24465f"/><circle cx="20" cy="19" r="1.5" fill="#24465f"/><path d="M13 22q3 2 6 0" fill="none" stroke="#24465f" stroke-linecap="round"/></svg>`;
-  tray = new Tray(nativeImage.createFromDataURL(`data:image/svg+xml;charset=UTF-8,${encodeURIComponent(iconSvg)}`));
+  tray = new Tray(appIcon.resize({ width: 32, height: 32, quality: 'best' }));
   tray.setToolTip('DOST — your desk companion');
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: 'Open DOST', click: () => showMainWindow() },

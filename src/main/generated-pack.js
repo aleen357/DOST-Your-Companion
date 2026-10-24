@@ -4,8 +4,8 @@
 const { EMOTIONS, ITEMS_PER_CATEGORY } = require('./dost-prompt');
 
 const MIN_PER_CATEGORY = 3;
-const KIND_BY_CATEGORY = { nudge: 'break', wisdom: 'wisdom', joke: 'joke' };
-const CATEGORY_ALIASES = { quote: 'wisdom', quotes: 'wisdom', reminder: 'nudge', nudges: 'nudge', jokes: 'joke' };
+const KIND_BY_CATEGORY = { nudge: 'break', wisdom: 'wisdom', joke: 'joke', encouragement: 'encouragement' };
+const CATEGORY_ALIASES = { quote: 'wisdom', quotes: 'wisdom', reminder: 'nudge', nudges: 'nudge', jokes: 'joke', encouragements: 'encouragement' };
 
 function parseJson(text) {
   try {
@@ -26,6 +26,8 @@ function cleanTalk(value) {
   // The quiz's trait words are for the model only; a line that labels the person is dropped.
   if (/procrastinat|pushover|overthink|spiral/i.test(text)) return null;
   // Lines that reuse the prompt's old tone examples or shame the person are dropped too.
+  // The prompt's example jokes are there to show the style, not to be copied.
+  if (/outstanding in his field|so it froze|too many problems/i.test(text)) return null;
   if (/there is no tomorrow|you are failing|you always|you said|you told me|panic attack|(you're|you are)( \w+){1,4} again|put (it|things|this) off again/i.test(text)) return null;
   return text;
 }
@@ -51,7 +53,7 @@ function parseGeneratedPack(text) {
     : Object.entries(raw.DOST_TALKS).flatMap(([category, items]) =>
       Array.isArray(items) ? items.map((item) => ({ ...item, CATEGORY: category })) : []);
   const persona = String(raw.PERSONA || '').toLowerCase().trim();
-  const buckets = { nudge: [], wisdom: [], joke: [] };
+  const buckets = { nudge: [], wisdom: [], joke: [], encouragement: [] };
   const seen = new Set();
   for (const item of talks) {
     const talk = cleanTalk(item?.TALK);
@@ -74,19 +76,21 @@ function parseGeneratedPack(text) {
     inferredPersona: ['chill', 'bossy'].includes(persona) ? persona : null,
     suggestions: toMessages('nudge'),
     wisdom: toMessages('wisdom'),
-    jokes: toMessages('joke')
+    jokes: toMessages('joke'),
+    encouragement: toMessages('encouragement')
   };
 }
 
-// Generated lines replace the prepared nudges, wisdom and jokes; prepared
-// encouragement and follow-up check-ins stay so the reminder loop keeps its shape.
+// Generated lines replace the prepared nudges, wisdom, jokes and encouragement;
+// prepared follow-up check-ins stay so the reminder loop keeps its shape.
 function mergeIntoPack(localPack, generated) {
   return {
     ...localPack,
     source: 'local-model',
     suggestions: generated.suggestions,
     wisdom: generated.wisdom,
-    jokes: generated.jokes
+    jokes: generated.jokes,
+    encouragement: generated.encouragement
   };
 }
 
