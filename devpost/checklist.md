@@ -81,13 +81,13 @@ Build mode: learn
 ## Code Tour and App Map
 
 - [x] Learning activity complete — brief guided recap traced preview and scheduled reminder paths from the visible overlay to their source code.
-- [ ] Optional edit and transfer reflection addressed — no app edit was needed; optional transfer question offered below, response pending.
+- [x] Optional edit and transfer reflection addressed — no application edit was needed; the learner answered the transfer reflection, recorded in the ignored learner profile.
 - [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
 Activity and evidence: The learner started DOST in developer mode and opened the preview overlay. Compared the fixed preview path (`showReminderPreview` → `previewPresentation` → `presentReminder`) with the scheduled path (`arm` → `handleReminderDue` → `selectReminder` → `presentReminder` → `renderReminder`). Connected the visible overlay to the separate timing, message-selection, and rendering responsibilities.
 Route and stops: (1) `src/main/reminder-clock.js` — `arm()` calls `onDue(kind)` when a reminder lane is due. (2) `src/main/main.js` — `resumeReminderClock()` wires the callback to `handleReminderDue(lane)`, which selects and saves a pending reminder, then calls `presentReminder()`. (3) `src/main/message-selection.js` — `selectReminder()` chooses from the appropriate lane; `src/renderer/overlay.js` — `renderReminder()` shows the message and persona.
 Edit outcome: No optional application edit; the wrap-up focused on explaining the existing architecture and creating a route map.
-Reflection: Optional transfer question offered: “If you added a new message category, where would you start and why?” Response pending.
+Reflection: Answered; the learner's response is recorded in the ignored learner profile.
 Activity mode: Brief guided recap anchored to the learner's preview-overlay check and the already completed end-to-end demo.
 
 ## Revisions

@@ -69,7 +69,8 @@
     <h2 id="change-title">To change this, start here</h2>
     <div class="changes">
       <div><h3>Reminder timing</h3><p>Start with the timing constants and <code>resumeReminderClock()</code> in <code>src/main/main.js</code>; the lane behavior is in <code>src/main/reminder-clock.js</code>.</p></div>
-      <div><h3>Prepared messages and persona</h3><p>Start with <code>src/shared/personas.js</code> for persona content, then check <code>src/main/message-selection.js</code> for how a message is chosen.</p></div>
+      <div><h3>Prepared fallback messages</h3><p><code>src/shared/personas.js</code> is the live prepared-message catalog and fallback, not a throwaway mock. <code>src/main/message-selection.js</code> decides which pool supplies a reminder.</p></div>
+      <div><h3>Add a generated category</h3><p>Define the category in <code>src/main/dost-prompt.js</code>, validate and map it in <code>src/main/generated-pack.js</code>, add prepared fallback lines in <code>src/shared/personas.js</code>, then route it in <code>src/main/message-selection.js</code>.</p></div>
       <div><h3>Character art and motion</h3><p>Start with the emotion art in <code>src/renderer/slime.js</code> and its motion rules in <code>src/renderer/styles.css</code>.</p></div>
       <div><h3>Incubation questions</h3><p>Start with <code>src/shared/questions.js</code>; <code>src/renderer/incubation.js</code> displays the flow and sends each answer through the preload bridge.</p></div>
     </div>
@@ -77,7 +78,7 @@
 
   <section class="card" aria-labelledby="practice-title">
     <h2 id="practice-title">A practice to reuse</h2>
-    <p>Give each stage one job: the clock decides <em>when</em>, the picker decides <em>what</em>, and the renderer decides <em>how it appears</em>. The preview-versus-scheduled distinction is a useful check: a preview verifies presentation, while a real timer path also exercises selection and saved state. On another project, trace one visible action across its trigger, decision, and output before changing a module.</p>
+    <p>Give each stage one job: the clock decides <em>when</em>, the picker decides <em>what</em>, and the renderer decides <em>how it appears</em>. A new generated category crosses a similar boundary: prompt contract → response parser/mapper → selection, with prepared fallback content in the persona catalog. The preview-versus-scheduled distinction is another useful check: a preview verifies presentation, while a real timer path also exercises selection and saved state. On another project, trace one visible action across its trigger, decision, and output before changing a module.</p>
   </section>
 
   <section aria-labelledby="run-title">
