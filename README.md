@@ -2,21 +2,101 @@
 
 A small Windows desktop companion that learns what kind of encouragement fits, then offers helpful break reminders.
 
-## Run locally
+DOST starts as an egg. You answer five light questions in each of three short incubation sessions, and DOST hatches as **Chill** (gentle, green) or **Bossy** (playful, orange-red). If a local AI model is set up, it writes DOST's personal nudges, wisdom and jokes from your answers, once, at hatch time. Everything runs on your PC: your answers are never sent to a cloud service.
 
-Install Node.js and npm, then run these commands from the project folder:
+## Setup
+
+### 1. Install Node.js
+
+Install [Node.js](https://nodejs.org/) (the LTS version includes npm). Check it worked:
+
+```powershell
+node --version
+npm --version
+```
+
+### 2. Install Ollama and the model (optional, for personal messages)
+
+DOST uses [Ollama](https://ollama.com/) to run a small language model on your own PC. Without it, DOST still works and hatches with its prepared messages.
+
+1. Download and install [Ollama for Windows](https://ollama.com/download/windows), or install it from a terminal:
+
+   ```powershell
+   winget install Ollama.Ollama
+   ```
+
+2. Open a new terminal and download the model DOST uses (about 3.3 GB, once; needs internet):
+
+   ```powershell
+   ollama pull qwen3.5:4b
+   ```
+
+3. Check that the model is installed:
+
+   ```powershell
+   ollama list
+   ```
+
+Ollama runs in the background after installation (look for its icon in the Windows tray). DOST talks to it only at `http://127.0.0.1:11434`, on this PC. When you press **Let's Go** on the ready egg, DOST uses the model if it is installed; writing the messages takes one to two minutes while the egg glows. If Ollama or the model is missing, or generation fails, DOST hatches with its prepared messages instead.
+
+### 3. Turn on Windows animation effects
+
+DOST's egg, hatch and slime motion follow your Windows motion setting. If animations are turned off, DOST appears still. To turn them on:
+
+1. Open **Settings** → **Accessibility** → **Visual effects**.
+2. Turn **Animation effects** on.
+
+Restart DOST after changing this setting.
+
+### 4. Install and run DOST
+
+From the project folder:
 
 ```powershell
 npm install
 npm start
 ```
 
-Use `npm run start:dev` for the accelerated developer mode. It includes a live next-reminder countdown, overlay preview, Start over, and an immediate reminder trigger in the tray. `npm run start:demo` keeps the same short demo timing while hiding those developer controls.
+## Using DOST
 
-Optional message personalization uses a model running locally through Ollama. Install [Ollama for Windows](https://ollama.com/download/windows), then download the model with `ollama pull qwen3.5:4b` (about 3.3 GB, once). DOST checks whether Ollama and the model are available. The model download requires internet; profile generation runs on this PC. If the local model is unavailable or you skip generation, DOST hatches with its prepared messages.
+Use **Connect** to answer five questions in each of three incubation sessions. In the normal app, each session unlocks 24 hours after the last one. Once all fifteen answers are in, press **Let's Go** to hatch DOST.
 
-Use **Connect** to answer five questions in each of three short incubation sessions. In the normal app, each session unlocks after 24 hours. To demonstrate the whole hatch journey without waiting, run `npm run start:demo`; the incubation wait is 30 seconds. Guest answers and the selected message pack are saved locally in Electron's user data folder. Use **Start over** to erase the saved answers and begin with a fresh egg. Closing the main window keeps DOST in the Windows tray; choose **Quit DOST** from the tray menu to exit.
+After hatching, the main window shows DOST with two care buttons:
 
-In regular use, the companion preview and reset tools are hidden. After DOST hatches, habit nudges run every two hours and light jokes/wisdom run about every 50 minutes. Light messages get small timing variation and are skipped when they would land within 30 minutes of a habit nudge. Demo mode scales the cadence to a two-minute habit nudge and roughly 50-second light messages. OK makes the next light follow-up encouraging. Cross mutes light messages for five hours (five minutes in demo); habit nudges continue, and crossing a habit nudge schedules a check-in at the next habit slot. Both clocks pause while DOST is fully quit and resume from their saved remaining time. The preview art is static; character motion will be added near the end of the build.
+- **Feed** gives DOST a snack with a short eating animation.
+- **Sleep** puts DOST to bed and mutes every reminder for five hours. Press **Wake** to end the nap early.
 
-Persona definitions live together in `src/shared/personas.js`: identity, tone, palette, prepared messages, and answer-specific message variants. Scoring and the slime renderer use the persona IDs from that catalog.
+DOST lives in the Windows tray. Closing the main window keeps it running; choose **Quit DOST** from the tray menu to exit.
+
+### Reminders
+
+- Habit nudges come every two hours, and light jokes or wisdom about every 50 minutes. Light messages get small timing variation and are skipped when they would land within 30 minutes of a habit nudge.
+- Each reminder is a small overlay that doesn't block your work. **OK** makes the next light follow-up encouraging. The cross mutes light messages for five hours; habit nudges continue, and crossing a habit nudge schedules a check-in at the next habit slot.
+- The clocks pause while DOST is fully quit and resume from their saved remaining time.
+
+Guest answers and the message pack are saved locally in Electron's user data folder. Use **Start over** to erase them and begin with a fresh egg.
+
+## Demo and developer modes
+
+```powershell
+npm run start:demo
+```
+
+Demo mode shortens every wait so the whole journey fits in a few minutes: the incubation pause is 30 seconds, habit nudges come every two minutes, light messages about every 50 seconds, and muting lasts five minutes. Sleep still lasts five hours.
+
+```powershell
+npm run start:dev
+```
+
+Developer mode uses the same short timing and adds a live next-reminder countdown, an overlay preview, Start over and an immediate reminder trigger in the tray.
+
+## Project layout
+
+- `src/main/` runs the Electron app: windows, tray, reminder clocks, saved data and the local model connection.
+- `src/renderer/` holds the incubation screen, the reminder overlay and the slime artwork.
+- `src/shared/personas.js` defines each persona: identity, tone, palette, prepared messages and answer-specific message variants. Scoring and the slime renderer use the persona IDs from that catalog.
+- `devpost/` holds the scope, product definition, technical spec and build checklist.
+
+## License
+
+[MIT](LICENSE)

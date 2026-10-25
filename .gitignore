@@ -4,7 +4,6 @@
 # Local credentials
 .env
 .env.*
-!.env.example
 
 # Generated files
 /node_modules/
@@ -14,3 +13,6 @@
 
 # Course template clone (has its own git history)
 /learn-ai-basics/
+
+# Local handoff notes
+/CARRY-ON.md
