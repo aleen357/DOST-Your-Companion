@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>DOST — App Map</title>
+  <style>
+    :root { color-scheme: light; --ink:#203142; --muted:#526574; --line:#d6e2e7; --paper:#f4f8fa; --card:#fff; --blue:#ddecf5; --green:#58b98d; --orange:#e78368; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 "Segoe UI",system-ui,sans-serif; }
+    main { max-width:900px; margin:auto; padding:36px 22px 56px; }
+    h1,h2,h3 { line-height:1.2; }
+    h1 { margin:0 0 8px; font-size:clamp(2rem,5vw,3rem); }
+    h2 { margin:30px 0 12px; font-size:1.35rem; }
+    h3 { margin:0 0 8px; font-size:1.05rem; }
+    p { margin:8px 0; }
+    .lead { max-width:70ch; color:var(--muted); font-size:1.08rem; }
+    .card { margin:14px 0; padding:20px; border:1px solid var(--line); border-radius:16px; background:var(--card); box-shadow:0 5px 20px #2031420a; }
+    .flow { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr); gap:10px; align-items:stretch; }
+    .node { min-height:116px; padding:14px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+    .node strong { display:block; margin-bottom:6px; }
+    .node small { display:block; color:var(--muted); overflow-wrap:anywhere; }
+    .arrow { align-self:center; text-align:center; color:var(--muted); font-size:1.4rem; }
+    .route { counter-reset:stop; display:grid; gap:12px; padding:0; list-style:none; }
+    .route li { counter-increment:stop; display:grid; grid-template-columns:42px 1fr; gap:12px; padding:14px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+    .route li::before { content:counter(stop); display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:var(--blue); font-weight:700; }
+    code { padding:1px 5px; border-radius:5px; background:#edf2f5; font:0.92em/1.5 Consolas,"Courier New",monospace; overflow-wrap:anywhere; }
+    .changes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .changes > div { padding:14px; border-left:4px solid var(--green); border-radius:8px; background:#fff; }
+    .note { color:var(--muted); font-size:.94rem; }
+    a { color:#145d88; text-underline-offset:3px; }
+    :focus-visible { outline:3px solid #236fa3; outline-offset:3px; }
+    @media (max-width:750px) { main { padding:24px 14px 40px; } .flow { grid-template-columns:1fr; } .arrow { transform:rotate(90deg); } .changes { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>DOST app map</h1>
+    <p class="lead">DOST is a Windows desktop companion for simple habits. It gathers light context during incubation, then offers local reminders, jokes, and encouragement through a small overlay. Feed and Sleep let the user care for the companion; Sleep pauses reminders until DOST wakes.</p>
+  </header>
+
+  <section class="card" aria-labelledby="flow-title">
+    <h2 id="flow-title">How a scheduled reminder reaches the screen</h2>
+    <div class="flow" role="img" aria-label="The reminder clock calls the main process, which chooses and saves a message, then renders the message in the overlay.">
+      <div class="node"><strong>1. Timer</strong><small><code>src/main/reminder-clock.js</code><br><code>arm()</code> decides which lane is due.</small></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="node"><strong>2. Main process</strong><small><code>src/main/main.js</code><br><code>handleReminderDue(lane)</code> gets a message and records it.</small></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="node"><strong>3. Message picker</strong><small><code>src/main/message-selection.js</code><br><code>selectReminder()</code> chooses from the right lane.</small></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="node"><strong>4. Overlay</strong><small><code>src/renderer/overlay.js</code><br><code>renderReminder()</code> shows the line and emotion.</small></div>
+    </div>
+    <p class="note">The timer and message selection run in Electron’s main process. The overlay receives a presentation through the narrow preload bridge and updates its text and character.</p>
+  </section>
+
+  <section aria-labelledby="route-title">
+    <h2 id="route-title">Guided reference route</h2>
+    <ol class="route">
+      <li><div><h3>Find the entry point</h3><p>In <code>src/main/reminder-clock.js</code>, open <code>arm()</code>. When a lane reaches its due time, it calls the supplied <code>onDue(kind)</code> callback.</p></div></li>
+      <li><div><h3>Follow the decision and save</h3><p>In <code>src/main/main.js</code>, <code>resumeReminderClock()</code> connects the timer to <code>handleReminderDue</code>. That handler calls <code>selectReminder(guest, lane)</code>, stores the pending reminder, then calls <code>presentReminder()</code>.</p></div></li>
+      <li><div><h3>See the visible result</h3><p><code>src/main/message-selection.js</code> chooses an unused message from the habit or light lane. <code>presentReminder()</code> sends it to the overlay; <code>src/renderer/overlay.js</code> handles it in <code>renderReminder()</code>.</p></div></li>
+    </ol>
+    <p class="note">The developer preview uses a fixed sample from <code>previewPresentation()</code>; it proves the overlay can render. <strong>Show reminder now</strong> triggers the reminder clock and follows the scheduling and selection path.</p>
+  </section>
+
+  <section aria-labelledby="change-title">
+    <h2 id="change-title">To change this, start here</h2>
+    <div class="changes">
+      <div><h3>Reminder timing</h3><p>Start with the timing constants and <code>resumeReminderClock()</code> in <code>src/main/main.js</code>; the lane behavior is in <code>src/main/reminder-clock.js</code>.</p></div>
+      <div><h3>Prepared messages and persona</h3><p>Start with <code>src/shared/personas.js</code> for persona content, then check <code>src/main/message-selection.js</code> for how a message is chosen.</p></div>
+      <div><h3>Character art and motion</h3><p>Start with the emotion art in <code>src/renderer/slime.js</code> and its motion rules in <code>src/renderer/styles.css</code>.</p></div>
+      <div><h3>Incubation questions</h3><p>Start with <code>src/shared/questions.js</code>; <code>src/renderer/incubation.js</code> displays the flow and sends each answer through the preload bridge.</p></div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="practice-title">
+    <h2 id="practice-title">A practice to reuse</h2>
+    <p>Give each stage one job: the clock decides <em>when</em>, the picker decides <em>what</em>, and the renderer decides <em>how it appears</em>. The preview-versus-scheduled distinction is a useful check: a preview verifies presentation, while a real timer path also exercises selection and saved state. On another project, trace one visible action across its trigger, decision, and output before changing a module.</p>
+  </section>
+
+  <section aria-labelledby="run-title">
+    <h2 id="run-title">Run it again</h2>
+    <ul>
+      <li><code>npm install</code> installs dependencies.</li>
+      <li><code>npm start</code> runs normal timing.</li>
+      <li><code>npm run start:demo</code> shortens waits for a demo.</li>
+      <li><code>npm run start:dev</code> adds developer preview and immediate reminder controls.</li>
+    </ul>
+    <p class="note">This map describes source commit <code>0845191</code>. It is a snapshot and can drift as the app changes. Recheck the named functions when following the route.</p>
+  </section>
+</main>
+</body>
+</html>
