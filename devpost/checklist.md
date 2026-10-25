@@ -29,34 +29,34 @@ Build mode: learn
   Learner check: Complete the short incubation journey in the app. Check that the questions feel light, the scoring/hatch result makes sense, and the local messages fit the persona; point out anything you would rewrite.
   Commit: `Add DOST incubation and local persona`
 
-- [ ] **3. DOST delivers scheduled reminders and follows up**
+- [x] **3. DOST delivers scheduled reminders and follows up**
   Becomes usable: After hatching, DOST runs from the tray, shows local reminders on schedule, and changes the next message based on how the user dismissed the previous one.
   Why now: This connects the incubated context to the product's promised cross-app nudge, using the already verified overlay and local pack.
   PRD ref: `prd.md > The Core Journey` (steps 5–6), `prd.md > Features and Behavior > Cross-app reminders`, `prd.md > Features and Behavior > Dismissal and follow-up`, and `prd.md > States and Boundaries`
   Spec ref: `spec.md > Components > Reminder clock and tray`, `spec.md > Components > Cross-app reminder overlay`, `spec.md > Data Model`, and `spec.md > Important Failure Modes`
   Build: Start two independent lanes at hatch: a habit nudge every two hours and a light joke/wisdom message about every 50 minutes. Add up to five minutes of random jitter to light timing and enforce a 30-minute minimum gap around habit reminders. Scale these to two minutes, 50 seconds, five seconds, and 30 seconds in demo/developer modes. Keep both lanes running while hidden in the tray and persist their remaining time across Quit/relaunch. Shuffle through the generated messages without repeating until a category is exhausted. OK changes the next light follow-up to encouragement; cross mutes light messages for five hours (five minutes in demo) while habit nudges continue. Crossing a habit nudge also schedules a “did you do it?” check-in at the next habit slot; after that check-in, the next habit slot returns to a suggestion. Do not reset either clock on dismissal. Add a developer-only countdown, overlay preview, Start over, and immediate habit reminder through `npm run start:dev`; hide these controls in demo and regular modes.
   Verify (mechanical): Hatch in demo mode, confirm developer controls are absent, and confirm light and habit events follow the short schedule with the minimum gap. In developer mode, confirm the countdown updates and immediate habit reminder works. Exercise OK, light-cross, habit-cross, and check-in paths; confirm the five-minute demo mute affects only light messages. Quit and relaunch to confirm both saved lanes, mute state, and follow-up state resume.
-  Learner check: Let a reminder appear while another app is open. Try the OK path and the cross path; tell me whether the timing and follow-up feel supportive rather than nagging.
+  Learner check: Completed by the learner in an end-to-end demo; scheduled reminders and OK/cross behavior were checked.
   Commit: `Add DOST reminder schedule and follow-up`
 
-- [ ] **4. DOST creates a personalized message pack with a local model**
+- [x] **4. DOST creates a personalized message pack with a local model**
   Becomes usable: After incubation, the user can generate a personalized message pack from their answers using a model running locally through Ollama, or continue with prepared messages.
   Why now: Finalize the local generation contract before revising the question wording. A question-bank-independent profile format lets us improve questions later without rewriting the Ollama client or generated-pack contract.
   PRD ref: `prd.md > The Core Journey` (step 4), `prd.md > Features and Behavior > Cross-app reminders`, and `prd.md > What We're Building`
   Spec ref: `spec.md > Components > Local model message generation`, `spec.md > External Services and Dependencies`, `spec.md > Important Failure Modes`, and `spec.md > Decisions and Open Issues`
   Build: Replace the Gemini preview with three small boundaries: a profile formatter that turns any versioned question bank into labeled Q/A pairs, a local Ollama client that checks the fixed localhost runtime/model and makes one request, and a response adapter that validates the agreed JSON and maps talks to DOST's reminder categories. Preserve the user's prompt wording and emotion names. Reconcile score-based and model-inferred persona in one generation: on disagreement choose Chill. Store the generated pack locally as active content. If the user skips, Ollama/model is missing, or generation fails, keep the prepared pack and allow hatching.
   Verify (mechanical): Confirm the formatter works with either question-bank version without hardcoded question IDs; Ollama/model detection uses only localhost; a successful response validates and maps into existing reminder categories; score/model disagreement resolves to Chill; and missing runtime/model or invalid output leaves the prepared pack usable. Confirm there is no cloud endpoint or API key.
-  Learner check: Install Ollama and download the selected local model, use **Start over** in `npm run start:dev`, complete the current incubation set, and generate Dost's pack. Inspect whether the result reflects the profile, requested persona rule, categories, and emotion names. Try the prepared-message fallback when local generation is unavailable.
+  Learner check: Completed by the learner; Ollama and the configured model were verified, and generation returned the expected 15 responses.
   Commit: `Add local-model personalization for DOST`
 
-- [ ] **5. DOST learns a broader, more useful profile during incubation**
+- [x] **5. DOST learns a broader, more useful profile during incubation**
   Becomes usable: A new guest can answer 15 inclusive questions using single choice, multi-select, or short free responses, with an explicit way to decline a free-response question.
   Why now: With the profile-to-prompt contract and output mapping established, revise the questions to give DOST useful context for different kinds of work, study, care, and home life without changing the local-model interface.
   PRD ref: `prd.md > Guest incubation and answers`, `prd.md > Persona and hatching`, and `prd.md > What We're Building`
   Spec ref: `spec.md > Components > Incubation window`, `spec.md > Components > Persona and local message selection`, `spec.md > Data Model`, and `spec.md > File Structure`
   Build: Use 15 light questions across daily life, goals, social style, hurdles, and support style. Keep five questions per session. Support single-choice, bounded multi-select with exclusive “none” choices, and short typed responses with “Prefer not to share.” Score only explicit support-style choices locally; pass the version-neutral labeled answer profile to the local model after incubation. Preserve the prior question set for guests already mid-incubation and make local reminder selection understand the new answer shapes.
   Verify (mechanical): Run JavaScript syntax checks and a small structural check that the set has 15 questions, five per session, unique IDs/options, and bounded multi-select rules. Confirm the guest migration preserves old answers and tags in-progress guests for their original question set. Confirm profile formatting is unchanged by a question ID/wording change.
-  Learner check: In `npm run start:dev`, use **Start over**, answer through all three demo sessions, try each answer type and “Prefer not to share,” and confirm the support-style answers and local-model personalization make sense. Check that wording feels natural outside software work.
+  Learner check: Completed by the learner; questions were reviewed and the incubation-to-hatch journey was included in the end-to-end demo.
   Commit: `Refine DOST incubation questions and response types`
 
 - [x] **6. DOST's character gets its final animation and expressions**
@@ -72,11 +72,11 @@ Build mode: learn
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 1, inspect overlay above another app and give feedback on placement, character art, and dismissal.
-- [ ] Final kick-the-tires exploration and feedback completed — after all slices, try incubation, hatching, reminder timing, follow-up branches, and preview/skip behavior.
+- [x] Final kick-the-tires exploration and feedback completed — the learner checked the questions, Ollama generation, end-to-end demo, and Feed/Sleep interactions.
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — the learner reported the end-to-end demo and added Feed/Sleep behavior tested and asked to proceed with the shipping checklist.
 
 ## Code Tour and App Map
 
