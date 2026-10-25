@@ -11,3 +11,6 @@
 /dist/
 /out/
 *.log
+
+# Course template clone (has its own git history)
+/learn-ai-basics/

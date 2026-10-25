@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "slime-gallery", "runtimeExecutable": "node", "runtimeArgs": ["dev/serve.js"], "port": 5178 }
+  ]
+}
