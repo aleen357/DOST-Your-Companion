@@ -163,12 +163,17 @@ function render() {
   helloButton.hidden = revealStage !== 'ready';
   goButton.hidden = !state.hatchPending || revealing;
   for (const id of ['main-eyebrow', 'main-title', 'intro', 'effort-row', 'effort-track']) byId(id).hidden = showDost || revealing;
+  // The how-it-works steps explain DOST before and between sessions, then step aside.
+  byId('how-steps').hidden = state.hatched || state.hatchPending || revealing || sessionOpen;
   byId('hatch-panel').hidden = !showDost;
   document.body.classList.toggle('is-home', showDost);
   connectButton.hidden = state.hatched || state.hatchPending || revealing;
+  const questionsLeft = state.totalQuestions - count;
   byId('intro').textContent = state.hatchPending
-    ? 'Your DOST is ready to meet you.'
-    : state.hatched ? 'A little friend, shaped around what matters to you.' : 'Your DOST is getting ready to meet you.';
+    ? 'All 15 answers are in. Press Let’s Go to hatch your DOST.'
+    : state.hatched ? 'A little friend, shaped around what matters to you.'
+      : count === 0 ? 'Answer a few light questions and your DOST hatches to fit you.'
+        : `${questionsLeft} questions to go. Your answers decide who hatches.`;
   byId('footer-copy').textContent = state.hatchPending
     ? 'Your answers stay on this PC.'
     : state.hatched ? 'Your answers and DOST stay on this PC.' : 'Your answers stay on this PC. No account needed.';

@@ -23,6 +23,8 @@ Source: `scope.md > The Unique Kernel`, `Who It's For`, and `The Core Loop`.
 ### Incubation screen
 
 - The shared purple candy background, with the egg as the central focus of a white, lilac-rimmed card.
+- The first screen says what DOST is and what the user is doing: the DOST logo, "a break buddy for your desktop", the headline "Hatch a tiny friend who reminds you to take breaks." and three steps (Answer · Hatch · Take breaks). The steps hide once a session is open or the egg is full.
+- Type is Baloo 2 (bundled, SIL OFL), a rounded, bubbly font; the DOST wordmark is extra-bold candy pink.
 - A bar at the top shows progress toward hatching ("15 little moments until hatch", then "Your egg is full").
 - Connect opens a compact dialogue anchored at the bottom. It shows one question at a time with its group name, session number and position (for example "2 OF 5").
 - The footer reminds the user that answers stay on this PC and no account is needed.
