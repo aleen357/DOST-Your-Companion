@@ -111,7 +111,7 @@ Source: `scope.md > The Core Loop` and `What "Working" Looks Like`.
 ## Product Decisions
 
 - Keep the incubation because Dost needs user context to offer relevant guidance.
-- Use 15 questions total across three sessions of five; the larger 50-question bank remains deferred.
+- Use 15 questions total across three sessions of five; a larger question bank remains deferred.
 - Ask indirect, playful scene questions instead of direct personality questions, so answers feel light and the persona is not obvious from the quiz.
 - Score with +2 chill, +2 bossy, and occasional random +2; choose randomly on a final tie. Typed answers never score.
 - Make generation part of **Let's Go** rather than a separate opt-in screen: it runs only when Ollama and the model are already installed on this PC, and the README explains setup. Without them, DOST hatches with prepared lines and no error.
@@ -131,7 +131,7 @@ Source: `scope.md > The Core Loop` and `What "Working" Looks Like`.
 
 ## Deferred From the POC
 
-- The full 50-question bank, external Google or password sign-in, and guest-account linking.
+- A larger question bank, external Google or password sign-in, and guest-account linking.
 - Real phone or desktop screen-time detection, reminder notifications (reminders use DOST's own overlay), AI generation for every reminder, and actual two-hour waits in the demo.
 - An in-app Ollama setup screen with a "Check again" action (setup lives in the README for now).
 - Additional personas, reminder schedules, and expanded personalization.
