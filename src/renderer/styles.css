@@ -87,7 +87,7 @@ h1 { margin: 0; color: #3b2766; font: 800 34px/1.08 'Baloo 2', sans-serif; lette
 #connect-button:hover:not(:disabled) .connect-icon { animation: heart-bounce .6s ease-in-out infinite alternate; }
 @keyframes rainbow-slide { to { background-position: 200% 0; } }
 @keyframes heart-bounce { from { transform: translateY(0) scale(1); } to { transform: translateY(-2px) scale(1.15); } }
-.primary-button:focus-visible,.okay-button:focus-visible,.close-button:focus-visible { outline: 3px solid #b79cf2; outline-offset: 3px; }
+.primary-button:focus-visible { outline: 3px solid #b79cf2; outline-offset: 3px; }
 .prototype-note { margin: 14px 0 0; color: #a99cc4; font-size: 12px; }
 .page-footer { display: flex; justify-content: center; gap: 8px; color: #96a5ba; font-size: 12px; }.footer-heart { color: #80c8a9; }
 
@@ -135,14 +135,17 @@ h1 { margin: 0; color: #3b2766; font: 800 34px/1.08 'Baloo 2', sans-serif; lette
 .is-home .incubation-card::before { display: none; }
 .is-home .card-footer { border-top-color: #ffffff33; }
 .is-home .card-footer p,.is-home .prototype-note { color: #ece4ff; }
+.is-home .card-footer { justify-content: center; text-align: center; }
+.is-home .card-footer p { max-width: 540px; padding: 8px 18px; border-radius: 16px; background: #4b2f93b3; font-size: 14px; }
 .is-home .developer-timer { color: #f3eeff; }
 
-.hatch-panel { margin: 0 auto 4px; max-width: 475px; }
-.toy { --toy-color: #70d4a5; --toy-line: #23594f; position: relative; width: 290px; margin: 0 auto 20px; padding-top: 22px; }
+.hatch-panel { margin: 0 auto 4px; max-width: 640px; }
+.toy { --toy-color: #70d4a5; --toy-line: #23594f; position: relative; width: min(100%, 600px); margin: 0 auto 20px; padding-top: 22px; }
 .toy-loop { position: absolute; top: 0; left: 50%; width: 30px; height: 32px; border: 5px solid #d9dde6; border-bottom-color: transparent; border-radius: 50% 50% 0 0; box-shadow: inset 0 1px 0 #fff, 0 1px 0 #00000014; transform: translateX(-50%); }
 .toy-shell {
-  position: relative; display: grid; justify-items: center; align-content: start; height: 356px; padding: 24px 0 0;
-  border-radius: 50% 50% 47% 47% / 57% 57% 43% 43%;
+  position: relative; display: grid; justify-items: center; align-content: start; height: 400px; padding: 22px 0 0;
+  /* A wide, soft pebble rather than an egg, so DOST gets a roomier screen. */
+  border-radius: 46% 46% 42% 42% / 50% 50% 50% 50%;
   background:
     radial-gradient(ellipse at 30% 18%, #ffffff8c 0, #fff0 34%),
     repeating-linear-gradient(0deg, #ffffff2e 0 14px, transparent 14px 28px) 0 100% / 100% 34% no-repeat,
@@ -153,7 +156,7 @@ h1 { margin: 0; color: #3b2766; font: 800 34px/1.08 'Baloo 2', sans-serif; lette
 .toy-brand { margin: 0 0 8px; color: var(--toy-line); font: 800 18px/1 'Baloo 2', 'Segoe UI', sans-serif; letter-spacing: .22em; opacity: .85; }
 .toy-bezel { padding: 11px; border-radius: 22px 22px 26px 26px; background: linear-gradient(180deg, #fffffff0, #f3f5ffd9); box-shadow: inset 0 2px 5px #0000001f, 0 1px 0 #ffffff99; }
 .toy-screen {
-  display: grid; grid-template-rows: auto 1fr auto; width: 168px; height: 156px; padding: 6px 8px; border-radius: 10px;
+  display: grid; grid-template-rows: auto 1fr auto; width: 300px; height: 196px; padding: 8px 12px; border-radius: 10px;
   background-color: #e4ecd6;
   background-image: linear-gradient(#5d6b4a0d 1px, transparent 1px), linear-gradient(90deg, #5d6b4a0d 1px, transparent 1px);
   background-size: 4px 4px;
@@ -164,15 +167,15 @@ h1 { margin: 0; color: #3b2766; font: 800 34px/1.08 'Baloo 2', sans-serif; lette
 .toy-icons svg { width: 15px; height: 15px; fill: none; stroke: #4c5741; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: .38; transition: opacity .2s ease, stroke .2s ease; }
 .toy.is-feeding [data-icon="feed"],.toy.is-asleep [data-icon="sleep"] { stroke: #2d3527; opacity: 1; }
 .toy.is-asleep .toy-screen { background-color: #c9d0dc; }
-.hatch-slime { width: 106px; height: 106px; margin: 0 auto; align-self: center; }
+.hatch-slime { width: 132px; height: 132px; margin: 0 auto; align-self: center; }
 .hatch-persona { margin-bottom: 5px; }
 .home-caption { display: inline-block; max-width: 100%; padding: 12px 22px 14px; border-radius: 20px; background: #6a45c2; box-shadow: 0 4px 0 #4b2f93, 0 10px 22px #3a1f7a40; }
 .is-home #hatch-persona { color: #f3ecff; }
 .hatch-panel h2 { margin: 0; color: #2b405d; font: 700 23px/1.3 'Baloo 2', 'Segoe UI', sans-serif; }
 .is-home .hatch-panel h2 { color: #fff; text-shadow: 0 2px 10px #3a1f7a4d; }
-.care-actions { display: flex; justify-content: center; gap: 46px; margin: 18px 0 0; }
+.care-actions { display: flex; justify-content: center; gap: 72px; margin: 18px 0 0; }
 .care-button { display: grid; justify-items: center; gap: 5px; padding: 0; border: 0; background: none; color: var(--toy-line); cursor: pointer; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
-.care-circle { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0, #ffd3e3 38%, #f59bbf 100%); box-shadow: 0 5px 0 #c96f95, 0 9px 14px #00000033, inset 0 -3px 5px #e07aa580; transition: transform .1s ease, box-shadow .1s ease; }
+.care-circle { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0, #ffd3e3 38%, #f59bbf 100%); box-shadow: 0 5px 0 #c96f95, 0 9px 14px #00000033, inset 0 -3px 5px #e07aa580; transition: transform .1s ease, box-shadow .1s ease; }
 .care-circle svg { width: 22px; height: 22px; }
 .care-button:hover .care-circle { filter: brightness(1.04); }
 .care-button:active .care-circle { box-shadow: 0 1px 0 #c96f95, 0 3px 6px #00000033, inset 0 -3px 5px #e07aa580; transform: translateY(4px); }
@@ -192,7 +195,7 @@ h1 { margin: 0; color: #3b2766; font: 800 34px/1.08 'Baloo 2', sans-serif; lette
 /* The reminder window is transparent, so only the card should paint (not the :root tint). */
 html.overlay-root { background: transparent; }
 .overlay-page { width: 100vw; height: 100vh; padding: 12px; overflow: hidden; background: transparent; user-select: none; }
-.companion-card { display: flex; align-items: center; gap: 12px; width: 100%; height: 100%; padding: 13px 15px 13px 10px; border: 3px solid #e9e0ff; border-radius: 22px; background: linear-gradient(135deg, #fff 0%, #fbf8ff 100%); box-shadow: 0 3px 8px #263b5624, 0 1px 3px #22384b14; animation: card-enter .34s cubic-bezier(.2,.8,.2,1) both; }
+.companion-card { display: flex; align-items: center; gap: 12px; width: 100%; height: 100%; padding: 10px 15px 10px 8px; border: 5px solid #ffd23f; border-radius: 30px; background: linear-gradient(135deg, #fff 0%, #fbf8ff 100%); box-shadow: inset 0 0 0 2px #e9a823, 0 3px 0 #d99a1f66, 0 4px 8px #3a1f7a33; animation: card-enter .34s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes card-enter { from { opacity: 0; transform: translateY(10px) scale(.975); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .slime-wrap { position: relative; display: grid; flex: 0 0 105px; place-items: center; width: 105px; height: 132px; }
 .slime-mount { position: relative; z-index: 1; width: 105px; height: 105px; }
@@ -308,13 +311,13 @@ html.overlay-root { background: transparent; }
 .persona-dot { display: inline-block; width: 6px; height: 6px; margin: 0 4px 1px 0; border-radius: 50%; background: #55c694; }
 .dot-separator { margin: 0 3px; color: #a3b0b8; }
 .preview-label { margin-left: auto; padding: 4px 7px; border: 1px solid #e7eee9; border-radius: 999px; color: #93a197; font-size: 8px; font-weight: 700; letter-spacing: .08em; }
-.companion-message { max-width: 236px; margin: 8px 0 10px; color: #33465a; font: 600 12px/1.46 'Baloo 2', 'Segoe UI', sans-serif; letter-spacing: -.01em; }
-.companion-actions { display: flex; align-items: center; gap: 8px; }
-.okay-button { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 11px; border: 0; border-radius: 10px; background: #efe7ff; color: #5a3a9e; cursor: pointer; font-size: 10px; font-weight: 700; transition: background .16s ease; }
-.okay-button:hover { background: #e3d7ff; }
-.okay-button span { font-size: 12px; }
-.close-button { display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid #ece4fb; border-radius: 10px; background: white; color: #8476a3; cursor: pointer; font-size: 18px; line-height: 1; transition: background .16s ease, color .16s ease; }
-.close-button:hover { background: #fff0ee; color: #bb6b65; }
+.companion-message { max-width: 236px; margin: 4px 0 6px; color: #33465a; font: 600 12px/1.46 'Baloo 2', 'Segoe UI', sans-serif; letter-spacing: -.01em; }
+/* Okay and Close reuse the Feed/Sleep toy buttons, a size smaller to fit the reminder card. */
+.companion-actions { --toy-line: #5a3a9e; display: flex; align-items: flex-start; gap: 16px; }
+.companion-actions .care-button { gap: 3px; font-size: 9px; }
+.companion-actions .care-circle { width: 36px; height: 36px; box-shadow: 0 4px 0 #c96f95, 0 6px 10px #00000026, inset 0 -3px 5px #e07aa580; }
+.companion-actions .care-circle svg { width: 18px; height: 18px; }
+.companion-actions .care-button:active .care-circle { box-shadow: 0 1px 0 #c96f95, 0 2px 4px #00000026, inset 0 -3px 5px #e07aa580; transform: translateY(3px); }
 
 @media (max-width: 700px) {
   .shell { width: min(100% - 32px, 560px); padding-top: 18px; }

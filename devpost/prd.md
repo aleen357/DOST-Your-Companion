@@ -37,7 +37,8 @@ Source: `scope.md > The Unique Kernel`, `Who It's For`, and `The Core Loop`.
 
 ### Hatched home
 
-- The same purple room as every other screen. DOST lives on the screen of an egg-shaped handheld, like a Tamagotchi: the shell takes DOST's own colour (green for Chill, orange-red for Bossy) with a gingham band, the screen has a row of small icons above and below DOST, and Feed and Sleep are the two round buttons on the shell.
+- The same purple room as every other screen. DOST lives on the roomy screen of a wide, rounded handheld, like a Tamagotchi: the shell takes DOST's own colour (green for Chill, orange-red for Bossy) with a gingham band, the screen has a row of small icons above and below DOST, and Feed and Sleep are the two round buttons on the shell.
+- Below that, a line explains that DOST will keep popping up on screen while the user works, with a reminder or a little motivation, and that everything stays on this PC.
 - Below the handheld: the persona label (for example "DOST · CHILL") and DOST's introduction line.
 - **Feed:** a random snack (strawberry, cookie or watermelon) drops in, DOST chews it in three bites, then wiggles happily with hearts.
 - **Sleep:** DOST yawns and dozes in a nightcap; every reminder is muted for five hours. The button becomes **Wake** to end the nap early. Feed is unavailable while DOST sleeps.
@@ -45,7 +46,7 @@ Source: `scope.md > The Unique Kernel`, `Who It's For`, and `The Core Loop`.
 ### Reminder overlay
 
 - Small character and message sit unobtrusively at the lower-left edge, like the reference the learner shared. It must not take over the whole screen.
-- The Windows overlay provides OK and cross controls. Swipe dismissal is not part of the desktop proof of concept.
+- The overlay has a bold rounded yellow border and two round toy buttons, **Okay** and **Close**, styled like Feed and Sleep. Swipe dismissal is not part of the desktop proof of concept.
 
 ## Look and Feel
 

@@ -129,7 +129,9 @@ byId('continue-button').addEventListener('click', async () => {
     textDeclined = false;
     if (state.hatched || (state.completedQuestions > 0 && state.completedQuestions % 5 === 0)) sessionOpen = false;
     if (!state.hatched && state.completedQuestions > 0 && state.completedQuestions % 5 === 0) {
-      feedback.textContent = `Session ${state.completedSessions} complete. Your next five questions unlock after the incubation pause.`;
+      feedback.textContent = state.hatchPending
+        ? 'All three sessions done. Your egg is full!'
+        : `Session ${state.completedSessions} complete. Your next five questions unlock after the incubation pause.`;
     }
     render();
   } catch (error) {
@@ -178,7 +180,8 @@ function render() {
         : `${questionsLeft} questions to go. Your answers decide who hatches.`;
   byId('footer-copy').textContent = state.hatchPending
     ? 'Your answers stay on this PC.'
-    : state.hatched ? 'Your answers and DOST stay on this PC.' : 'Your answers stay on this PC. No account needed.';
+    : state.hatched ? 'DOST will keep popping up on your screen while you work, with a reminder or a little motivation. Your answers and DOST stay on this PC.'
+      : 'Your answers stay on this PC. No account needed.';
 
   const question = state.question;
   questionPanel.hidden = !sessionOpen || !question || !state.canConnect;
