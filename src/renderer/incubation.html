@@ -43,19 +43,42 @@
         <button class="primary-button continue-button" id="continue-button" type="button">Continue <span aria-hidden="true">→</span></button>
       </section>
       <section class="hatch-panel" id="hatch-panel" hidden>
-        <div id="hatch-slime" class="hatch-slime" aria-hidden="true"></div>
+        <!-- A little egg-shaped handheld, like a Tamagotchi: the screen shows DOST, the shell holds Feed and Sleep. -->
+        <div class="toy" id="toy">
+          <span class="toy-loop" aria-hidden="true"></span>
+          <div class="toy-shell">
+            <p class="toy-brand" aria-hidden="true">DOST</p>
+            <div class="toy-bezel">
+              <div class="toy-screen">
+                <div class="toy-icons" aria-hidden="true">
+                  <svg data-icon="feed" viewBox="0 0 16 16"><path d="M4 1v5M2.5 1v4a1.5 1.5 0 0 0 3 0V1M4 6v9M11 15V1c-2 1-3 3-3 6h3"/></svg>
+                  <svg data-icon="sleep" viewBox="0 0 16 16"><path d="M10 2a6 6 0 1 0 4 10 5 5 0 0 1-4-10Z"/></svg>
+                  <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2 10 0 12"/></svg>
+                  <svg viewBox="0 0 16 16"><path d="M8 14S2 10 2 5.5A3 3 0 0 1 8 4a3 3 0 0 1 6 1.5C14 10 8 14 8 14Z"/></svg>
+                </div>
+                <div id="hatch-slime" class="hatch-slime" aria-hidden="true"></div>
+                <div class="toy-icons" aria-hidden="true">
+                  <svg viewBox="0 0 16 16"><path d="M8 2s-4 5-4 8a4 4 0 0 0 8 0c0-3-4-8-4-8Z"/></svg>
+                  <svg viewBox="0 0 16 16"><rect x="2" y="9" width="3" height="5"/><rect x="6.5" y="6" width="3" height="8"/><rect x="11" y="3" width="3" height="11"/></svg>
+                  <svg viewBox="0 0 16 16"><path d="M2 3h12v8H7l-3 3v-3H2Z"/></svg>
+                  <svg viewBox="0 0 16 16"><path d="M8 2v8M8 13v1"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="care-actions">
+              <button class="care-button" id="feed-button" type="button">
+                <span class="care-circle" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 7c6 0 9 3 8 8-1 5-5 8-8 9-3-1-7-4-8-9-1-5 2-8 8-8Z" fill="#ef4f5f"/><path d="M7 7l5 2 5-2-2-4-3 1-3-1Z" fill="#4caf50"/><g fill="#ffe08a"><circle cx="9" cy="13" r="1"/><circle cx="15" cy="14" r="1"/><circle cx="12" cy="18" r="1"/></g></svg></span>
+                <span>Feed</span>
+              </button>
+              <button class="care-button" id="sleep-button" type="button" aria-pressed="false">
+                <span class="care-circle" aria-hidden="true" id="sleep-icon"></span>
+                <span id="sleep-label">Sleep</span>
+              </button>
+            </div>
+          </div>
+        </div>
         <p class="eyebrow" id="hatch-persona">YOUR DOST</p>
         <h2 id="hatch-title">Hello, friend.</h2>
-        <div class="care-actions">
-          <button class="care-button" id="feed-button" type="button">
-            <span class="care-circle" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 7c6 0 9 3 8 8-1 5-5 8-8 9-3-1-7-4-8-9-1-5 2-8 8-8Z" fill="#ef4f5f"/><path d="M7 7l5 2 5-2-2-4-3 1-3-1Z" fill="#4caf50"/><g fill="#ffe08a"><circle cx="9" cy="13" r="1"/><circle cx="15" cy="14" r="1"/><circle cx="12" cy="18" r="1"/></g></svg></span>
-            <span>Feed</span>
-          </button>
-          <button class="care-button" id="sleep-button" type="button" aria-pressed="false">
-            <span class="care-circle" aria-hidden="true" id="sleep-icon"></span>
-            <span id="sleep-label">Sleep</span>
-          </button>
-        </div>
         <p class="sleep-note" id="sleep-note" role="status" hidden></p>
         <section class="ai-sample" id="ai-sample" hidden aria-label="Lines DOST wrote for you"></section>
       </section>

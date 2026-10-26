@@ -27,7 +27,9 @@ feedButton.addEventListener('click', async () => {
   if (feeding || state?.sleepUntil) return;
   feeding = true;
   feedButton.disabled = true;
+  byId('toy').classList.add('is-feeding');
   await window.DostSlime.feed(byId('hatch-slime'));
+  byId('toy').classList.remove('is-feeding');
   feeding = false;
   feedButton.disabled = Boolean(state?.sleepUntil);
 });
@@ -162,6 +164,7 @@ function render() {
   goButton.hidden = !state.hatchPending || revealing;
   for (const id of ['main-eyebrow', 'main-title', 'intro', 'effort-row', 'effort-track']) byId(id).hidden = showDost || revealing;
   byId('hatch-panel').hidden = !showDost;
+  document.body.classList.toggle('is-home', showDost);
   connectButton.hidden = state.hatched || state.hatchPending || revealing;
   byId('intro').textContent = state.hatchPending
     ? 'Your DOST is ready to meet you.'
@@ -295,6 +298,11 @@ function renderHatch() {
   byId('hatch-persona').textContent = `${profile.name.toUpperCase()} · ${profile.label.toUpperCase()}`;
   byId('hatch-title').textContent = profile.introduction;
   const asleep = Boolean(state.sleepUntil);
+  // The handheld's shell takes DOST's own colour, so each persona gets its own toy.
+  const toy = byId('toy');
+  toy.style.setProperty('--toy-color', profile.palette.body);
+  toy.style.setProperty('--toy-line', profile.palette.line);
+  toy.classList.toggle('is-asleep', asleep);
   const look = `${profile.id}:${asleep ? 'asleep' : 'awake'}`;
   if (slime.dataset.look !== look && !feeding) {
     window.DostSlime.mount(slime, profile.id, { sleeping: asleep });

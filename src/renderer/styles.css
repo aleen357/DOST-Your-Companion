@@ -101,22 +101,66 @@ h1 { margin: 0; color: #283d5a; font: 700 30px/1.24 Manrope, sans-serif; letter-
 .continue-button { min-height: 38px; font-size: 13px; }
 .continue-button:disabled { cursor: not-allowed; opacity: .45; }
 .recovery-note { margin: 13px 0 0; color: #9c6d4f; font-size: 12px; }
-.hatch-panel { margin: 17px auto 4px; max-width: 475px; }
-.hatch-slime { width: 160px; height: 160px; margin: 0 auto 10px; }
+/* Hatched home: a purple room with a soft gingham weave, and DOST living in an egg-shaped handheld. */
+.incubation-page.is-home {
+  background-color: #8f6fd8;
+  background-image:
+    repeating-linear-gradient(0deg, #ffffff0a 0 26px, transparent 26px 52px),
+    repeating-linear-gradient(90deg, #ffffff0a 0 26px, transparent 26px 52px),
+    radial-gradient(ellipse at 50% 30%, #a98ae8 0, #8f6fd8 55%, #7656c4 100%);
+}
+.is-home .incubation-card { min-height: 0; border-color: transparent; background: transparent; box-shadow: none; }
+.is-home .incubation-card::before { display: none; }
+.is-home .card-footer { border-top-color: #ffffff33; }
+.is-home .card-footer p,.is-home .prototype-note,.is-home .page-footer { color: #ece4ff; }
+.is-home .footer-heart { color: #ffc6e0; }
+.is-home .developer-timer { color: #f3eeff; }
+
+.hatch-panel { margin: 0 auto 4px; max-width: 475px; }
+.toy { --toy-color: #70d4a5; --toy-line: #23594f; position: relative; width: 290px; margin: 0 auto 20px; padding-top: 22px; }
+.toy-loop { position: absolute; top: 0; left: 50%; width: 30px; height: 32px; border: 5px solid #d9dde6; border-bottom-color: transparent; border-radius: 50% 50% 0 0; box-shadow: inset 0 1px 0 #fff, 0 1px 0 #00000014; transform: translateX(-50%); }
+.toy-shell {
+  position: relative; display: grid; justify-items: center; align-content: start; height: 356px; padding: 24px 0 0;
+  border-radius: 50% 50% 47% 47% / 57% 57% 43% 43%;
+  background:
+    radial-gradient(ellipse at 30% 18%, #ffffff8c 0, #fff0 34%),
+    repeating-linear-gradient(0deg, #ffffff2e 0 14px, transparent 14px 28px) 0 100% / 100% 34% no-repeat,
+    repeating-linear-gradient(90deg, #ffffff2e 0 14px, transparent 14px 28px) 0 100% / 100% 34% no-repeat,
+    linear-gradient(160deg, color-mix(in srgb, var(--toy-color) 72%, #fff) 0%, var(--toy-color) 55%, color-mix(in srgb, var(--toy-color) 82%, #000) 100%);
+  box-shadow: 0 26px 46px #3a1f7a59, inset 0 -10px 22px #00000026, inset 0 8px 14px #ffffff80;
+}
+.toy-brand { margin: 0 0 8px; color: var(--toy-line); font: 800 13px/1 Manrope, 'Segoe UI', sans-serif; letter-spacing: .32em; opacity: .75; }
+.toy-bezel { padding: 11px; border-radius: 22px 22px 26px 26px; background: linear-gradient(180deg, #fffffff0, #f3f5ffd9); box-shadow: inset 0 2px 5px #0000001f, 0 1px 0 #ffffff99; }
+.toy-screen {
+  display: grid; grid-template-rows: auto 1fr auto; width: 168px; height: 156px; padding: 6px 8px; border-radius: 10px;
+  background-color: #e4ecd6;
+  background-image: linear-gradient(#5d6b4a0d 1px, transparent 1px), linear-gradient(90deg, #5d6b4a0d 1px, transparent 1px);
+  background-size: 4px 4px;
+  box-shadow: inset 0 2px 6px #4a573b40;
+  transition: background-color .5s ease;
+}
+.toy-icons { display: flex; justify-content: space-between; padding: 0 3px; }
+.toy-icons svg { width: 15px; height: 15px; fill: none; stroke: #4c5741; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: .38; transition: opacity .2s ease, stroke .2s ease; }
+.toy.is-feeding [data-icon="feed"],.toy.is-asleep [data-icon="sleep"] { stroke: #2d3527; opacity: 1; }
+.toy.is-asleep .toy-screen { background-color: #c9d0dc; }
+.hatch-slime { width: 106px; height: 106px; margin: 0 auto; align-self: center; }
 .hatch-persona { margin-bottom: 5px; }
+.is-home #hatch-persona { color: #f3ecff; }
 .hatch-panel h2 { margin: 0; color: #2b405d; font: 700 23px/1.3 Manrope, 'Segoe UI', sans-serif; }
-.care-actions { display: flex; justify-content: center; gap: 28px; margin: 20px 0 6px; }
-.care-button { display: grid; justify-items: center; gap: 7px; padding: 0; border: 0; background: none; color: #5f7290; cursor: pointer; font-size: 13px; font-weight: 700; }
-.care-circle { display: grid; place-items: center; width: 58px; height: 58px; border: 1px solid #e1e9f4; border-radius: 50%; background: #fff; box-shadow: 0 8px 18px #2b405d17; transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
-.care-circle svg { width: 28px; height: 28px; }
-.care-button:hover .care-circle { box-shadow: 0 10px 22px #2b405d24; transform: translateY(-2px); }
-.care-button:active .care-circle { transform: scale(.94); }
-.care-button:focus-visible .care-circle { outline: 3px solid #79cda8; outline-offset: 3px; }
+.is-home .hatch-panel h2 { color: #fff; text-shadow: 0 2px 10px #3a1f7a4d; }
+.care-actions { display: flex; justify-content: center; gap: 46px; margin: 18px 0 0; }
+.care-button { display: grid; justify-items: center; gap: 5px; padding: 0; border: 0; background: none; color: var(--toy-line); cursor: pointer; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.care-circle { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0, #ffd3e3 38%, #f59bbf 100%); box-shadow: 0 5px 0 #c96f95, 0 9px 14px #00000033, inset 0 -3px 5px #e07aa580; transition: transform .1s ease, box-shadow .1s ease; }
+.care-circle svg { width: 22px; height: 22px; }
+.care-button:hover .care-circle { filter: brightness(1.04); }
+.care-button:active .care-circle { box-shadow: 0 1px 0 #c96f95, 0 3px 6px #00000033, inset 0 -3px 5px #e07aa580; transform: translateY(4px); }
+.care-button:focus-visible .care-circle { outline: 3px solid #fff; outline-offset: 3px; }
 .care-button:focus-visible { outline: none; }
-.care-button:disabled { cursor: default; opacity: .45; }
-.care-button:disabled .care-circle { box-shadow: none; transform: none; }
-#sleep-button[aria-pressed="true"] .care-circle { background: #eef1ff; border-color: #d3daf8; }
+.care-button:disabled { cursor: default; opacity: .55; }
+.care-button:disabled .care-circle { box-shadow: 0 2px 0 #c96f95; transform: translateY(3px); }
+#sleep-button[aria-pressed="true"] .care-circle { background: radial-gradient(circle at 35% 30%, #fff 0, #dfe3ff 38%, #a9b4f2 100%); box-shadow: 0 5px 0 #7b86c9, 0 9px 14px #00000033; }
 .sleep-note { margin: 6px 0 0; color: #6c7fd8; font-size: 13px; }
+.is-home .sleep-note { color: #f3ecff; }
 .ai-sample { margin-top: 22px; padding: 17px 20px; border: 1px dashed #d3dceb; border-radius: 16px; background: #f8fafd; text-align: left; }
 .ai-sample h3 { margin: 0; color: #415976; font-size: 15px; }
 .ai-sample > p { margin: 6px 0 12px; color: #7b8ba0; font-size: 12px; line-height: 1.5; }

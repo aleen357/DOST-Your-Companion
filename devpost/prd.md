@@ -35,7 +35,8 @@ Source: `scope.md > The Unique Kernel`, `Who It's For`, and `The Core Loop`.
 
 ### Hatched home
 
-- DOST alone, with its persona label (for example "DOST · CHILL") and its introduction line.
+- A plain purple room with a faint gingham weave. DOST lives on the screen of an egg-shaped handheld, like a Tamagotchi: the shell takes DOST's own colour (green for Chill, orange-red for Bossy) with a gingham band, the screen has a row of small icons above and below DOST, and Feed and Sleep are the two round buttons on the shell.
+- Below the handheld: the persona label (for example "DOST · CHILL") and DOST's introduction line.
 - **Feed:** a random snack (strawberry, cookie or watermelon) drops in, DOST chews it in three bites, then wiggles happily with hearts.
 - **Sleep:** DOST yawns and dozes in a nightcap; every reminder is muted for five hours. The button becomes **Wake** to end the nap early. Feed is unavailable while DOST sleeps.
 
