@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
-  <!-- Border-image tile: 12px corners, and one full wave per 12px edge so the wave repeats seamlessly. -->
-  <path d="M6 12A6 6 0 0 1 12 6Q15 1.5 18 6Q21 10.5 24 6A6 6 0 0 1 30 12Q34.5 15 30 18Q25.5 21 30 24A6 6 0 0 1 24 30Q21 34.5 18 30Q15 25.5 12 30A6 6 0 0 1 6 24Q1.5 21 6 18Q10.5 15 6 12Z" fill="#faf7ff" stroke="#ffc93c" stroke-width="3" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112" viewBox="0 0 112 112">
+  <!-- Border-image tile for a Tamagotchi-style yellow bezel. Slices are 24px; each 64px edge holds one soft
+       outward bulge that starts and ends flat, so repeated edges join without a notch. -->
+  <path d="M5 24A19 19 0 0 1 24 5C40 5 40 1.5 56 1.5C72 1.5 72 5 88 5A19 19 0 0 1 107 24C107 40 110.5 40 110.5 56C110.5 72 107 72 107 88A19 19 0 0 1 88 107C72 107 72 110.5 56 110.5C40 110.5 40 107 24 107A19 19 0 0 1 5 88C5 72 1.5 72 1.5 56C1.5 40 5 40 5 24Z" fill="#ffd23f" stroke="#f2b632" stroke-width="1.5"/>
+  <!-- The "screen": a rounded inset with a darker gold rim, like the bezel's inner edge. -->
+  <rect x="15" y="15" width="82" height="82" rx="9" fill="#faf7ff" stroke="#e9a823" stroke-width="2.5"/>
 </svg>

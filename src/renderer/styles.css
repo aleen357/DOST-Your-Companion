@@ -100,8 +100,8 @@ h1 { margin: 0; color: #3b2766; font: 800 34px/1.08 'Baloo 2', sans-serif; lette
 .developer-tools { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; width: 100%; }
 .developer-tools[hidden] { display: none; }
 .developer-timer { color: #74869d; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
-/* A cute yellow wavy frame (wavy-border.svg); the inside is a plain fill so it never shows tile seams. */
-.question-panel { margin: 18px 0 4px; padding: 10px 12px; border: 12px solid transparent; border-image: url("wavy-border.svg") 12 / 12px round; background: #faf7ff padding-box; text-align: left; filter: drop-shadow(0 4px 0 #f3d58a66); }
+/* A curvy yellow Tamagotchi bezel (wavy-border.svg); the inside is a plain fill so it never shows tile seams. */
+.question-panel { margin: 18px 0 4px; padding: 0 2px; border: 24px solid transparent; border-image: url("wavy-border.svg") 24 / 24px round; background: #faf7ff padding-box; text-align: left; filter: drop-shadow(0 5px 0 #d99a1f55); }
 .question-meta { display: flex; justify-content: space-between; color: #9a88c4; font-size: 11px; font-weight: 700; letter-spacing: .12em; }
 .question-panel h2 { margin: 11px 0 15px; color: #3b2766; font: 700 20px/1.35 'Baloo 2', 'Segoe UI', sans-serif; letter-spacing: -.025em; }
 .answer-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
