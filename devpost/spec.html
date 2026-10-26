@@ -47,7 +47,7 @@
     <div class="choices" role="group" aria-label="Journey steps">
       <button type="button" aria-pressed="true" data-step="0">1 · Begin</button><button type="button" aria-pressed="false" data-step="1">2 · Connect</button><button type="button" aria-pressed="false" data-step="2">3 · Wait</button><button type="button" aria-pressed="false" data-step="3">4 · Hatch</button><button type="button" aria-pressed="false" data-step="4">5 · Care</button><button type="button" aria-pressed="false" data-step="5">6 · Remind</button><button type="button" aria-pressed="false" data-step="6">7 · Respond</button>
     </div>
-    <div class="step-panel" aria-live="polite"><div class="step-label" id="step-label">1 · Begin</div><p id="step-copy">Electron reads the guest JSON file and opens the blue incubation screen at the last saved step. No account is required.</p></div>
+    <div class="step-panel" aria-live="polite"><div class="step-label" id="step-label">1 · Begin</div><p id="step-copy">Electron reads the guest JSON file and opens the purple incubation screen at the last saved step. No account is required.</p></div>
   </section>
 
   <section>
@@ -99,7 +99,7 @@
 </main>
 <script>
   const journey=[
-    ['1 · Begin','Electron reads the guest JSON file and opens the blue incubation screen at the last saved step. No account is required.'],
+    ['1 · Begin','Electron reads the guest JSON file and opens the purple incubation screen at the last saved step. No account is required.'],
     ['2 · Connect','The user answers five questions, one at a time. The main process validates each answer, adds any hidden option scores, and saves it locally. Scores and hints never reach the screen.'],
     ['3 · Wait','Connect shows a countdown: 24 hours normally, 30 seconds in the accelerated demo. Progress survives a restart.'],
     ['4 · Hatch','After answer 15 the egg shows Let’s Go. The main process checks Ollama on 127.0.0.1, builds the prompt, makes one call, validates the lines and applies Chill-on-conflict. If anything is missing or fails, it hatches with prepared lines. Then Hello opens the egg.'],

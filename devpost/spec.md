@@ -45,7 +45,7 @@ PRD refs: `prd.md > The Core Journey`, `Guest incubation and answers`, `Persona 
 
 ## Look and Feel
 
-Carry forward `prd.md > Look and Feel`: quiet blue incubation background, centered egg and progress bar, compact calm layout, then the animated green chill slime or orange-red bossy slime. The overlay is a small lower-left companion with a short message and visible OK/cross actions; desktop swipe dismissal is not supported. All slime drawing and motion (idle, reactions, eating, sleeping, snacks and hearts) lives in `slime.js`. Motion is disabled under `prefers-reduced-motion`, which follows the Windows animation setting. Use supportive, clear language so bossy is direct without becoming hostile. The cross-app window must remain small and non-blocking; the underlying work stays visible.
+Carry forward `prd.md > Look and Feel`: one purple gingham background with small pixel candies (`candy-tile.svg`, drawn by `dev/make-candy.js`) on every screen, a lilac-rimmed incubation card with a centered egg and progress bar, compact calm layout, then the animated green chill slime or orange-red bossy slime. The overlay is a small lower-left companion with a short message and visible OK/cross actions; desktop swipe dismissal is not supported. All slime drawing and motion (idle, reactions, eating, sleeping, snacks and hearts) lives in `slime.js`. Motion is disabled under `prefers-reduced-motion`, which follows the Windows animation setting. Use supportive, clear language so bossy is direct without becoming hostile. The cross-app window must remain small and non-blocking; the underlying work stays visible.
 
 ## Components
 
@@ -165,7 +165,7 @@ DOST/
 │   │   ├── overlay.html         # compact cross-app intervention
 │   │   ├── overlay.js           # OK/cross buttons and dismissal
 │   │   ├── slime.js             # character art, animation states and snacks
-│   │   └── styles.css           # blue shell, slime palette, layout, reduced motion
+│   │   └── styles.css           # purple candy room, handheld, slime palette, layout, reduced motion
 │   └── shared/
 │       ├── questions.js         # current 15 questions (version 3) with hidden scores and hints
 │       ├── questions-v2.js      # version 2 set for guests who started on it
