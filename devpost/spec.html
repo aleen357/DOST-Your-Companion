@@ -17,7 +17,7 @@
   <header>
     <div class="eyebrow">Technical blueprint · Windows proof of concept</div>
     <h1>Dost</h1>
-    <p class="lead">A guest answers 15 light questions, Dost hatches with a persona-shaped message pack, then a small animated companion appears over other work on a running-time schedule.</p>
+    <p class="lead">A guest answers 15 playful questions, presses Let’s Go while a local model writes DOST’s lines, and then a small animated companion appears over other work on a running-time schedule.</p>
     <span class="tag">Approved spec</span> <a href="spec.md">Read the canonical spec</a>
   </header>
 
@@ -25,27 +25,27 @@
     <div class="eyebrow">The system at a glance</div>
     <h2>What talks to what?</h2>
     <svg class="diagram" viewBox="0 0 960 350" role="img" aria-labelledby="diag-title diag-desc">
-      <title id="diag-title">Dost app architecture and data flow</title><desc id="diag-desc">The incubation and overlay windows use a preload bridge to reach Electron's main process. The main process controls the tray, timer, local guest JSON file, and optional Ollama generation on this computer.</desc>
+      <title id="diag-title">Dost app architecture and data flow</title><desc id="diag-desc">The incubation and overlay windows use a preload bridge to reach Electron's main process. The main process controls the tray, timer, local guest JSON file, and the one-time Ollama generation on this computer.</desc>
       <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#9bbcff"/></marker></defs>
-      <rect class="box" x="25" y="36" width="220" height="92" rx="14"/><text x="45" y="67">Incubation window</text><text class="sub" x="45" y="91">egg · questions · model setup</text>
-      <rect class="box" x="25" y="220" width="220" height="82" rx="14"/><text x="45" y="251">Reminder overlay</text><text class="sub" x="45" y="275">slime · suggestion · actions</text>
+      <rect class="box" x="25" y="36" width="220" height="92" rx="14"/><text x="45" y="67">Incubation window</text><text class="sub" x="45" y="91">questions · hatch · Feed · Sleep</text>
+      <rect class="box" x="25" y="220" width="220" height="82" rx="14"/><text x="45" y="251">Reminder overlay</text><text class="sub" x="45" y="275">slime · message · OK / cross</text>
       <rect class="box" x="310" y="122" width="175" height="90" rx="14"/><text x="332" y="153">Preload bridge</text><text class="sub" x="332" y="177">small, named IPC actions</text>
-      <rect class="box" x="565" y="98" width="200" height="135" rx="14"/><text x="588" y="129">Electron main</text><text class="sub" x="588" y="153">windows · tray · timer</text><text class="sub" x="588" y="174">scores · message pack · IPC</text>
+      <rect class="box" x="565" y="98" width="200" height="135" rx="14"/><text x="588" y="129">Electron main</text><text class="sub" x="588" y="153">windows · tray · two-lane clock</text><text class="sub" x="588" y="174">scores · sleep · message pack</text>
       <rect class="outside" x="815" y="37" width="120" height="75" rx="14"/><text x="833" y="67">Local JSON</text><text class="sub" x="829" y="88">answers + pack</text>
-      <rect class="outside" x="815" y="221" width="120" height="75" rx="14"/><text x="837" y="251">Ollama</text><text class="sub" x="829" y="272">local model</text>
+      <rect class="outside" x="815" y="221" width="120" height="75" rx="14"/><text x="837" y="251">Ollama</text><text class="sub" x="829" y="272">qwen3.5:4b</text>
       <path class="edge" d="M245 82 C275 82 278 145 310 155"/><path class="edge" d="M245 261 C278 261 278 187 310 174"/>
       <path class="edge" d="M485 165 H565"/><path class="edge" d="M765 130 C791 130 788 82 815 82"/>
       <path class="edge optional" d="M765 196 C793 196 788 258 815 258"/><path class="edge optional" d="M815 239 C787 220 793 204 765 186"/>
     </svg>
-    <div class="key"><span><i class="dot"></i>Local app flow</span><span><i class="dot opt"></i>Optional local model call</span></div>
-    <p class="callout"><strong>Privacy boundary:</strong> no other app's name or content is read. If the user chooses generation, onboarding answers go only to Ollama running on this computer; no cloud model receives them.</p>
+    <div class="key"><span><i class="dot"></i>Local app flow</span><span><i class="dot opt"></i>One local model call at hatch, if installed</span></div>
+    <p class="callout"><strong>Privacy boundary:</strong> no other app's name or content is read. At Let’s Go, answers go only to Ollama at 127.0.0.1 on this computer; no cloud model receives them.</p>
   </section>
 
   <section>
     <div class="eyebrow">Interactive journey</div>
     <h2>Follow one guest from egg to reminder</h2>
     <div class="choices" role="group" aria-label="Journey steps">
-      <button type="button" aria-pressed="true" data-step="0">1 · Begin</button><button type="button" aria-pressed="false" data-step="1">2 · Connect</button><button type="button" aria-pressed="false" data-step="2">3 · Wait</button><button type="button" aria-pressed="false" data-step="3">4 · Hatch</button><button type="button" aria-pressed="false" data-step="4">5 · Remind</button><button type="button" aria-pressed="false" data-step="5">6 · Respond</button>
+      <button type="button" aria-pressed="true" data-step="0">1 · Begin</button><button type="button" aria-pressed="false" data-step="1">2 · Connect</button><button type="button" aria-pressed="false" data-step="2">3 · Wait</button><button type="button" aria-pressed="false" data-step="3">4 · Hatch</button><button type="button" aria-pressed="false" data-step="4">5 · Care</button><button type="button" aria-pressed="false" data-step="5">6 · Remind</button><button type="button" aria-pressed="false" data-step="6">7 · Respond</button>
     </div>
     <div class="step-panel" aria-live="polite"><div class="step-label" id="step-label">1 · Begin</div><p id="step-copy">Electron reads the guest JSON file and opens the blue incubation screen at the last saved step. No account is required.</p></div>
   </section>
@@ -54,57 +54,58 @@
     <div class="eyebrow">Architecture choices</div><h2>Why these pieces?</h2>
     <div class="grid">
       <article class="card"><h3>Electron + plain web UI</h3><p>One main process controls Windows windows and a separate renderer draws them. JavaScript stays the main language; the accepted cost is a larger app.</p></article>
-      <article class="card"><h3>Tray-resident timer</h3><p>Closing the main window hides Dost so scheduled reminders continue. Quit fully to stop it; the remaining interval resumes on next launch.</p></article>
-      <article class="card"><h3>Local guest file</h3><p>One versioned JSON document preserves answers, scores, local reminders, generated messages, and follow-up state across restarts.</p></article>
-      <article class="card"><h3>Optional local generation</h3><p>Ollama uses the guest's answers to make a personalized pack on this PC. Prepared messages are the fallback if the user skips or local generation is unavailable.</p></article>
-      <article class="card"><h3>Honest reminder cadence</h3><p>Two hours normally, two minutes in demo mode. It measures time Dost runs, not screen use. “Show reminder now” follows the real overlay path.</p></article>
-      <article class="card"><h3>Two clear characters</h3><p class="persona"><i class="blob green"></i> Chill Dost is green. <i class="blob coral"></i> Bossy Dost is orange-red, direct but kind.</p></article>
+      <article class="card"><h3>Tray-resident timer</h3><p>Closing the main window hides Dost so scheduled reminders continue. Quit fully to stop it; the remaining time resumes on next launch.</p></article>
+      <article class="card"><h3>Local guest file</h3><p>One versioned JSON document (schema 7) keeps answers, scores, the message pack, sleep and follow-up state, and migrates older files.</p></article>
+      <article class="card"><h3>Generation inside Let’s Go</h3><p>If Ollama and the model are installed, one localhost call writes the pack; the output is validated as untrusted text. Otherwise DOST hatches with prepared lines, silently.</p></article>
+      <article class="card"><h3>Honest reminder cadence</h3><p>Habit nudge every two hours and a light line about every 50 minutes (two minutes and 50 seconds in demo). It measures time Dost runs, not screen use.</p></article>
+      <article class="card"><h3>Two clear characters</h3><p class="persona"><i class="blob green"></i> Chill Dost is green. <i class="blob coral"></i> Bossy Dost is orange-red, direct but kind. Both animate in <code>slime.js</code>.</p></article>
     </div>
   </section>
 
   <section>
-    <div class="eyebrow">Files to build</div><h2>Where the behavior lives</h2>
-    <div class="files">Dost/
-├── package.json                 scripts and pinned dependencies
+    <div class="eyebrow">Files as built</div><h2>Where the behavior lives</h2>
+    <div class="files">DOST/
+├── package.json                 start, start:demo, start:dev
+├── README.md · LICENSE (MIT)    setup, Ollama, demo steps
 ├── src/
 │   ├── main/
-│   │   ├── main.js              lifecycle and window creation
-│   │   ├── tray.js              reopen and quit
-│   │   ├── reminder-clock.js    normal/demo intervals
-│   │   ├── guest-store.js       local JSON read/write
+│   │   ├── main.js              lifecycle, windows, tray, IPC, sleep
+│   │   ├── reminder-clock.js    two-lane normal/demo schedule
+│   │   ├── guest-store.js       local JSON, validation, migration
 │   │   ├── persona.js           scoring and tie-break
-│   │   ├── local-model.js       Ollama detection, validation, fallback
-│   │   └── ipc-handlers.js      validated UI actions
+│   │   ├── message-selection.js prepared pack and reminder choice
+│   │   ├── dost-prompt.js       answers → model prompt
+│   │   ├── local-model.js       localhost Ollama check and call
+│   │   └── generated-pack.js    output validation and merge
 │   ├── preload/bridge.js        narrow renderer API
 │   ├── renderer/
-│   │   ├── incubation.html      egg, questions, model setup
-│   │   ├── overlay.html         cross-app reminder
-│   │   ├── incubation.js        session and hatch UI
-│   │   ├── overlay.js           OK and cross actions
-│   │   ├── slime.js             static character; animations added last
-│   │   └── styles.css           palette and layout
+│   │   ├── incubation.html/.js  questions, hatch, Feed, Sleep
+│   │   ├── overlay.html/.js     cross-app reminder, OK / cross
+│   │   ├── slime.js             character, animations, snacks
+│   │   └── styles.css           palette, layout, reduced motion
 │   └── shared/
-│       ├── questions.js         15 question/scoring definitions
-│       ├── fallback-messages.js offline packs
-│       └── message-schema.js    generated response validation
+│       ├── questions.js         15 questions (v3), hidden scores/hints
+│       ├── questions-v1/v2.js   older sets for older guests
+│       └── personas.js          persona catalog and message packs
 └── devpost/                     scope, PRD, spec, review pages</div>
   </section>
 
   <section>
     <div class="eyebrow">Demo contract</div><h2>What the recording can show</h2>
-    <div class="grid"><article class="card"><h3>Normal behavior</h3><p>Three sessions separated by 24 hours; reminder after a two-hour running interval.</p></article><article class="card"><h3>Accelerated demo</h3><p>30-second incubation waits and a two-minute reminder interval. A visible test control can show the same overlay immediately.</p></article><article class="card"><h3>Local model setup</h3><p>Install Ollama for Windows and download the configured model. DOST checks for it and generates the message pack locally; the user can skip setup and hatch with prepared messages.</p></article></div>
-    <p class="muted">The model needs an internet download once. After setup, profile answers are sent only to Ollama running on this computer.</p>
+    <div class="grid"><article class="card"><h3>Normal behavior</h3><p>Three sessions 24 hours apart; habit nudge every two hours, light line about every 50 minutes.</p></article><article class="card"><h3>Accelerated demo</h3><p><code>npm run start:demo</code>: 30-second incubation waits, two-minute habit and 50-second light lanes, five-minute light mute. Sleep stays five hours.</p></article><article class="card"><h3>Local model setup</h3><p>Install Ollama for Windows, run <code>ollama pull qwen3.5:4b</code>. Let’s Go uses it if present; generation takes one to two minutes.</p></article></div>
+    <p class="muted">The model needs an internet download once. After setup, answers are sent only to Ollama running on this computer.</p>
   </section>
   <footer>Canonical blueprint: <a href="spec.md">spec.md</a> · Product behavior: <a href="prd.md">prd.md</a></footer>
 </main>
 <script>
   const journey=[
     ['1 · Begin','Electron reads the guest JSON file and opens the blue incubation screen at the last saved step. No account is required.'],
-    ['2 · Connect','The user answers five light questions, one at a time. The main process scores selectable answers and writes each response locally.'],
-    ['3 · Wait','Connect becomes available after 24 hours normally, or 30 seconds in the accelerated demo. Progress survives a restart.'],
-    ['4 · Hatch','After answer 15, persona scoring selects chill or bossy. If Ollama and the selected model are installed, DOST can generate a personalized pack locally; otherwise it uses prepared messages.'],
-    ['5 · Remind','The app stays in the Windows tray. At the two-hour normal or two-minute demo interval, it opens the small lower-left overlay with locally selected messages.'],
-    ['6 · Respond','OK or cross closes DOST and saves the outcome. OK leads to a quote, another goal, or a joke next interval. Cross leads to a “did you do it?” check-in; dismissing that again leads to a different suggestion. Each dismissal restarts the interval. Character motion and expressions are added in the final build slice.']
+    ['2 · Connect','The user answers five questions, one at a time. The main process validates each answer, adds any hidden option scores, and saves it locally. Scores and hints never reach the screen.'],
+    ['3 · Wait','Connect shows a countdown: 24 hours normally, 30 seconds in the accelerated demo. Progress survives a restart.'],
+    ['4 · Hatch','After answer 15 the egg shows Let’s Go. The main process checks Ollama on 127.0.0.1, builds the prompt, makes one call, validates the lines and applies Chill-on-conflict. If anything is missing or fails, it hatches with prepared lines. Then Hello opens the egg.'],
+    ['5 · Care','Feed plays a snack animation in the renderer. Sleep saves sleepUntil five hours ahead; due reminders are skipped while asleep. Wake clears it.'],
+    ['6 · Remind','The app stays in the Windows tray. When the habit or light lane is due, the main process opens the small lower-left overlay with an unused message from the pack.'],
+    ['7 · Respond','OK or cross closes DOST without resetting either clock. OK makes the next light line an encouragement. Cross mutes light lines for five hours; crossing a habit nudge schedules a “did you do it?” check-in at the next habit slot.']
   ];
   document.querySelectorAll('[data-step]').forEach(button=>button.addEventListener('click',()=>{
     document.querySelectorAll('[data-step]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
