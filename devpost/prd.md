@@ -35,7 +35,7 @@ Source: `scope.md > The Unique Kernel`, `Who It's For`, and `The Core Loop`.
 
 ### Hatched home
 
-- A plain purple room with a faint gingham weave. DOST lives on the screen of an egg-shaped handheld, like a Tamagotchi: the shell takes DOST's own colour (green for Chill, orange-red for Bossy) with a gingham band, the screen has a row of small icons above and below DOST, and Feed and Sleep are the two round buttons on the shell.
+- The same purple room as every other screen. DOST lives on the screen of an egg-shaped handheld, like a Tamagotchi: the shell takes DOST's own colour (green for Chill, orange-red for Bossy) with a gingham band, the screen has a row of small icons above and below DOST, and Feed and Sleep are the two round buttons on the shell.
 - Below the handheld: the persona label (for example "DOST · CHILL") and DOST's introduction line.
 - **Feed:** a random snack (strawberry, cookie or watermelon) drops in, DOST chews it in three bites, then wiggles happily with hearts.
 - **Sleep:** DOST yawns and dozes in a nightcap; every reminder is muted for five hours. The button becomes **Wake** to end the nap early. Feed is unavailable while DOST sleeps.
@@ -47,7 +47,7 @@ Source: `scope.md > The Unique Kernel`, `Who It's For`, and `The Core Loop`.
 
 ## Look and Feel
 
-- Incubation uses a quiet blue background and simple, calm layout centered on the egg and progress bar.
+- Every screen shares one purple room: a faint gingham weave with small pixel-art candies, lollipops and hearts. Incubation uses a white, lilac-rimmed card centered on the egg and progress bar.
 - Dost is a slime: green for chill and orange-red for bossy, with idle, reaction, eating and sleeping animation. Angry eyes or emoticons alone can look hostile, so the message and animation make the intended tone clear; bossy is playful, never shaming.
 - Motion follows the Windows animation setting; with animations off, DOST appears still but fully visible.
 - The cross-app intervention is compact and friendly, following the lower-left placement in the learner's reference. Keep the underlying work visible.

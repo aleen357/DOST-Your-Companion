@@ -18,17 +18,17 @@ button { font: inherit; }
 .incubation-page {
   min-height: 100vh;
   overflow: hidden;
-  background: radial-gradient(ellipse at 48% 32%, #f9fbff 0, #edf4ff 43%, #e5efff 100%);
+  background: #8f6fd8;
 }
 .shell { width: min(100% - 64px, 960px); margin: 0 auto; padding: 30px 0 22px; }
 
-.incubation-card { position: relative; width: min(100%, 680px); min-height: 548px; margin: 33px auto 22px; padding: 35px 54px 25px; overflow: hidden; border: 1px solid #fff; border-radius: 28px; background: #ffffffaa; box-shadow: 0 24px 80px #7997c21d, inset 0 1px 0 #fff; text-align: center; }
-.incubation-card::before { position: absolute; z-index: -1; top: 40%; left: 50%; width: 460px; height: 290px; border-radius: 50%; background: #e3efff80; content: ''; filter: blur(36px); transform: translate(-50%, -50%); }
-.eyebrow { margin: 0 0 10px; color: #71a997; font-size: 11px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
-h1 { margin: 0; color: #283d5a; font: 700 30px/1.24 Manrope, sans-serif; letter-spacing: -.04em; }
-.intro { margin: 10px 0 0; color: #8392a8; font-size: 15px; }
+.incubation-card { position: relative; width: min(100%, 680px); min-height: 548px; margin: 33px auto 22px; padding: 35px 54px 25px; overflow: hidden; border: 7px solid #e9e0ff; border-radius: 40px; background: #fffdfe; box-shadow: 0 26px 60px #3a1f7a59, inset 0 2px 6px #5a3a9e1f; text-align: center; }
+.incubation-card::before { position: absolute; z-index: -1; top: 40%; left: 50%; width: 460px; height: 290px; border-radius: 50%; background: #f1eaff99; content: ''; filter: blur(36px); transform: translate(-50%, -50%); }
+.eyebrow { margin: 0 0 10px; color: #8a63d2; font-size: 11px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
+h1 { margin: 0; color: #3b2766; font: 700 30px/1.24 Manrope, sans-serif; letter-spacing: -.04em; }
+.intro { margin: 10px 0 0; color: #8476a3; font-size: 15px; }
 .egg-stage { position: relative; display: grid; place-items: center; height: 180px; margin-top: 1px; }
-.halo { position: absolute; width: 176px; height: 110px; border-radius: 50%; background: #cdddf8; opacity: .35; filter: blur(26px); }
+.halo { position: absolute; width: 176px; height: 110px; border-radius: 50%; background: #d9c8ff; opacity: .45; filter: blur(26px); }
 /* The egg is two identical shell layers clipped along a zigzag, so it can crack open. */
 .egg { position: relative; width: 89px; height: 116px; filter: drop-shadow(0 16px 18px #8ca1c838); animation: egg-float 4s ease-in-out infinite; }
 .egg-half { position: absolute; inset: 0; overflow: hidden; border: 1px solid #fff; border-radius: 49% 51% 48% 52% / 60% 59% 41% 40%; background: linear-gradient(137deg, #fff 5%, #f6f5ff 35%, #e0e7fb 72%, #c9d6f1 100%); box-shadow: inset 8px 7px 16px #fff, inset -7px -10px 17px #bccbea6e; transition: transform .6s cubic-bezier(.3,.7,.3,1), opacity .6s ease; }
@@ -62,58 +62,63 @@ h1 { margin: 0; color: #283d5a; font: 700 30px/1.24 Manrope, sans-serif; letter-
 .sparkle-one { top: 38px; left: calc(50% - 81px); font-size: 16px; }.sparkle-two { right: calc(50% - 90px); bottom: 46px; font-size: 20px; animation-delay: .7s; }.sparkle-three { top: 45px; right: calc(50% - 62px); font-size: 29px; animation-delay: 1.3s; }
 @keyframes egg-float { 0%,100% { transform: translateY(1px) rotate(-1deg); } 50% { transform: translateY(-7px) rotate(1deg); } }
 @keyframes sparkle { 0%,100% { opacity: .38; transform: scale(.82); } 50% { opacity: 1; transform: scale(1.12); } }
-.effort-row { display: flex; justify-content: space-between; margin: -1px 0 9px; color: #72839b; font-size: 13px; }
-.effort-row span:last-child { color: #9aa9bc; }
-.effort-track { height: 6px; overflow: hidden; border-radius: 99px; background: #e8edf6; box-shadow: inset 0 1px 2px #4c678613; }
-.effort-track span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #8be0ba, #5fc9a0); }
-.card-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 26px; padding-top: 18px; border-top: 1px solid #e9eef5; text-align: left; }
-.card-footer p { max-width: 235px; margin: 0; color: #7e8ea4; font-size: 13px; line-height: 1.5; }
-.primary-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 43px; padding: 0 17px; border: 0; border-radius: 13px; background: #293f5d; box-shadow: 0 7px 16px #263f5a21; color: white; cursor: pointer; font-size: 14px; font-weight: 600; transition: background .18s ease, transform .18s ease, box-shadow .18s ease; }
-.primary-button span { color: #a9e8ce; }
-.primary-button:hover { background: #354f72; box-shadow: 0 9px 19px #263f5a2e; transform: translateY(-1px); }
-.primary-button:active { transform: translateY(0); }
-.primary-button:focus-visible,.okay-button:focus-visible,.close-button:focus-visible { outline: 3px solid #79cda8; outline-offset: 3px; }
-.prototype-note { margin: 14px 0 0; color: #a0adbd; font-size: 12px; }
+.effort-row { display: flex; justify-content: space-between; margin: -1px 0 9px; color: #7a6a9c; font-size: 13px; }
+.effort-row span:last-child { color: #a99cc4; }
+.effort-track { height: 8px; overflow: hidden; border-radius: 99px; background: #efe9fb; box-shadow: inset 0 1px 2px #5a3a9e1f; }
+.effort-track span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ffa8cf, #b38cf5); }
+.card-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 26px; padding-top: 18px; border-top: 1px solid #f0eafb; text-align: left; }
+.card-footer p { max-width: 235px; margin: 0; color: #84779f; font-size: 13px; line-height: 1.5; }
+.primary-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 43px; padding: 0 17px; border: 0; border-radius: 14px; background: #6a45c2; box-shadow: 0 4px 0 #4b2f93, 0 8px 16px #3a1f7a33; color: white; cursor: pointer; font-size: 14px; font-weight: 600; transition: background .18s ease, transform .18s ease, box-shadow .18s ease; }
+.primary-button span { color: #ffc6e0; }
+.primary-button:hover { background: #7651d0; }
+.primary-button:active { box-shadow: 0 1px 0 #4b2f93, 0 3px 8px #3a1f7a33; transform: translateY(3px); }
+.primary-button:focus-visible,.okay-button:focus-visible,.close-button:focus-visible { outline: 3px solid #b79cf2; outline-offset: 3px; }
+.prototype-note { margin: 14px 0 0; color: #a99cc4; font-size: 12px; }
 .page-footer { display: flex; justify-content: center; gap: 8px; color: #96a5ba; font-size: 12px; }.footer-heart { color: #80c8a9; }
 
 [hidden] { display: none !important; }
 .incubation-page { overflow-x: hidden; overflow-y: auto; }
 .card-footer { flex-wrap: wrap; }
 .footer-actions { display: flex; align-items: center; gap: 8px; }
-.secondary-button { min-height: 40px; padding: 0 13px; border: 1px solid #dce6f2; border-radius: 12px; background: #fff; color: #62748d; cursor: pointer; font-size: 13px; font-weight: 600; }
-.secondary-button:hover { background: #f4f8fd; }
+.secondary-button { min-height: 40px; padding: 0 13px; border: 1px solid #e6def7; border-radius: 12px; background: #fff; color: #6a5a8e; cursor: pointer; font-size: 13px; font-weight: 600; }
+.secondary-button:hover { background: #f6f2ff; }
 .developer-tools { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; width: 100%; }
 .developer-tools[hidden] { display: none; }
 .developer-timer { color: #74869d; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.question-panel { margin: 18px 0 4px; padding: 20px; border: 1px solid #e4ebf4; border-radius: 18px; background: #ffffffc9; text-align: left; }
-.question-meta { display: flex; justify-content: space-between; color: #91a0b4; font-size: 11px; font-weight: 700; letter-spacing: .12em; }
-.question-panel h2 { margin: 11px 0 15px; color: #2b405d; font: 700 20px/1.35 Manrope, 'Segoe UI', sans-serif; letter-spacing: -.025em; }
+.question-panel { margin: 18px 0 4px; padding: 20px; border: 1px solid #ece4fb; border-radius: 20px; background: #faf7ff; text-align: left; }
+.question-meta { display: flex; justify-content: space-between; color: #9a88c4; font-size: 11px; font-weight: 700; letter-spacing: .12em; }
+.question-panel h2 { margin: 11px 0 15px; color: #3b2766; font: 700 20px/1.35 Manrope, 'Segoe UI', sans-serif; letter-spacing: -.025em; }
 .answer-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.answer-option { min-height: 39px; padding: 8px 12px; border: 1px solid #e4eaf2; border-radius: 11px; background: #fff; color: #53677f; cursor: pointer; text-align: left; font-size: 13px; transition: border-color .15s ease, background .15s ease; }
-.answer-option:hover,.answer-option[aria-pressed="true"] { border-color: #8bd6b5; background: #effaf4; color: #386c57; }
-.answer-option:focus-visible,.decline-answer:focus-visible { outline: 3px solid #79cda8; outline-offset: 2px; }
+.answer-option { min-height: 39px; padding: 8px 12px; border: 1px solid #e6def7; border-radius: 12px; background: #fff; color: #5b4d7a; cursor: pointer; text-align: left; font-size: 13px; transition: border-color .15s ease, background .15s ease; }
+.answer-option:hover,.answer-option[aria-pressed="true"] { border-color: #b79cf2; background: #f3edff; color: #5a3a9e; }
+.answer-option:focus-visible,.decline-answer:focus-visible { outline: 3px solid #b79cf2; outline-offset: 2px; }
 .answer-help { margin: 0 0 12px; color: #74859a; font-size: 12px; line-height: 1.5; }
 .decline-answer { margin-top: 8px; padding: 7px 0; border: 0; background: transparent; color: #74859a; cursor: pointer; text-decoration: underline; font: inherit; font-size: 12px; }
 .answer-label { display: block; margin: 6px 0; color: #74859a; font-size: 12px; }
 .question-panel textarea { width: 100%; min-height: 76px; resize: vertical; padding: 11px 12px; border: 1px solid #dfe7f1; border-radius: 11px; outline: none; color: #33465d; font: inherit; font-size: 14px; }
-.question-panel textarea:focus { border-color: #83ceaa; box-shadow: 0 0 0 3px #83ceaa25; }
+.question-panel textarea:focus { border-color: #b79cf2; box-shadow: 0 0 0 3px #b79cf233; }
 .form-error { min-height: 14px; margin: 6px 0; color: #bd6c60; font-size: 12px; }
 .continue-button { min-height: 38px; font-size: 13px; }
 .continue-button:disabled { cursor: not-allowed; opacity: .45; }
 .recovery-note { margin: 13px 0 0; color: #9c6d4f; font-size: 12px; }
-/* Hatched home: a purple room with a soft gingham weave, and DOST living in an egg-shaped handheld. */
-.incubation-page.is-home {
+/* Every stage sits in the same purple room: a faint gingham weave with small pixel candies (dev/make-candy.js). */
+.incubation-page,.incubation-page.is-home {
   background-color: #8f6fd8;
   background-image:
+    url('candy-tile.svg'),
     repeating-linear-gradient(0deg, #ffffff0a 0 26px, transparent 26px 52px),
     repeating-linear-gradient(90deg, #ffffff0a 0 26px, transparent 26px 52px),
     radial-gradient(ellipse at 50% 30%, #a98ae8 0, #8f6fd8 55%, #7656c4 100%);
+  background-attachment: fixed;
 }
+.page-footer { color: #ece4ff; }
+.footer-heart { color: #ffc6e0; }
+
+/* Hatched home: no card, DOST lives in an egg-shaped handheld. */
 .is-home .incubation-card { min-height: 0; border-color: transparent; background: transparent; box-shadow: none; }
 .is-home .incubation-card::before { display: none; }
 .is-home .card-footer { border-top-color: #ffffff33; }
-.is-home .card-footer p,.is-home .prototype-note,.is-home .page-footer { color: #ece4ff; }
-.is-home .footer-heart { color: #ffc6e0; }
+.is-home .card-footer p,.is-home .prototype-note { color: #ece4ff; }
 .is-home .developer-timer { color: #f3eeff; }
 
 .hatch-panel { margin: 0 auto 4px; max-width: 475px; }
@@ -145,6 +150,7 @@ h1 { margin: 0; color: #283d5a; font: 700 30px/1.24 Manrope, sans-serif; letter-
 .toy.is-asleep .toy-screen { background-color: #c9d0dc; }
 .hatch-slime { width: 106px; height: 106px; margin: 0 auto; align-self: center; }
 .hatch-persona { margin-bottom: 5px; }
+.home-caption { display: inline-block; max-width: 100%; padding: 12px 22px 14px; border-radius: 20px; background: #6a45c2; box-shadow: 0 4px 0 #4b2f93, 0 10px 22px #3a1f7a40; }
 .is-home #hatch-persona { color: #f3ecff; }
 .hatch-panel h2 { margin: 0; color: #2b405d; font: 700 23px/1.3 Manrope, 'Segoe UI', sans-serif; }
 .is-home .hatch-panel h2 { color: #fff; text-shadow: 0 2px 10px #3a1f7a4d; }
@@ -170,7 +176,7 @@ h1 { margin: 0; color: #283d5a; font: 700 30px/1.24 Manrope, sans-serif; letter-
 /* The reminder window is transparent, so only the card should paint (not the :root tint). */
 html.overlay-root { background: transparent; }
 .overlay-page { width: 100vw; height: 100vh; padding: 12px; overflow: hidden; background: transparent; user-select: none; }
-.companion-card { display: flex; align-items: center; gap: 12px; width: 100%; height: 100%; padding: 13px 15px 13px 10px; border: 1px solid #e3ebf3; border-radius: 21px; background: linear-gradient(135deg, #fff 0%, #fbfffd 100%); box-shadow: 0 3px 8px #263b5624, 0 1px 3px #22384b14; animation: card-enter .34s cubic-bezier(.2,.8,.2,1) both; }
+.companion-card { display: flex; align-items: center; gap: 12px; width: 100%; height: 100%; padding: 13px 15px 13px 10px; border: 3px solid #e9e0ff; border-radius: 22px; background: linear-gradient(135deg, #fff 0%, #fbf8ff 100%); box-shadow: 0 3px 8px #263b5624, 0 1px 3px #22384b14; animation: card-enter .34s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes card-enter { from { opacity: 0; transform: translateY(10px) scale(.975); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .slime-wrap { position: relative; display: grid; flex: 0 0 105px; place-items: center; width: 105px; height: 132px; }
 .slime-mount { position: relative; z-index: 1; width: 105px; height: 105px; }
@@ -288,10 +294,10 @@ html.overlay-root { background: transparent; }
 .preview-label { margin-left: auto; padding: 4px 7px; border: 1px solid #e7eee9; border-radius: 999px; color: #93a197; font-size: 8px; font-weight: 700; letter-spacing: .08em; }
 .companion-message { max-width: 236px; margin: 8px 0 10px; color: #33465a; font: 600 12px/1.46 Manrope, 'Segoe UI', sans-serif; letter-spacing: -.01em; }
 .companion-actions { display: flex; align-items: center; gap: 8px; }
-.okay-button { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 11px; border: 0; border-radius: 10px; background: #e4f7ee; color: #387d61; cursor: pointer; font-size: 10px; font-weight: 700; transition: background .16s ease; }
-.okay-button:hover { background: #d2f0e2; }
+.okay-button { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 11px; border: 0; border-radius: 10px; background: #efe7ff; color: #5a3a9e; cursor: pointer; font-size: 10px; font-weight: 700; transition: background .16s ease; }
+.okay-button:hover { background: #e3d7ff; }
 .okay-button span { font-size: 12px; }
-.close-button { display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid #e8edf0; border-radius: 10px; background: white; color: #778593; cursor: pointer; font-size: 18px; line-height: 1; transition: background .16s ease, color .16s ease; }
+.close-button { display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid #ece4fb; border-radius: 10px; background: white; color: #8476a3; cursor: pointer; font-size: 18px; line-height: 1; transition: background .16s ease, color .16s ease; }
 .close-button:hover { background: #fff0ee; color: #bb6b65; }
 
 @media (max-width: 700px) {
