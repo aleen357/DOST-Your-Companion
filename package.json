@@ -4,13 +4,42 @@
   "version": "0.1.0",
   "private": true,
   "description": "A small desktop companion for helpful breaks.",
+  "author": "aleen357",
+  "license": "MIT",
   "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
     "start:demo": "electron . --demo",
-    "start:dev": "electron . --dev"
+    "start:dev": "electron . --dev",
+    "dist": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.aleen357.dost",
+    "productName": "DOST",
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "DOST",
+      "artifactName": "DOST-Setup-${version}.${ext}"
+    }
   },
   "devDependencies": {
-    "electron": "^44.0.0"
+    "electron": "^44.0.0",
+    "electron-builder": "26.17.0"
   }
 }

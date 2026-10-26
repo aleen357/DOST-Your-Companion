@@ -4,7 +4,25 @@ A small Windows desktop companion that learns what kind of encouragement fits, t
 
 DOST starts as an egg. You answer five light questions in each of three short incubation sessions, and DOST hatches as **Chill** (gentle, green) or **Bossy** (playful, orange-red). If a local AI model is set up, it writes DOST's personal nudges, wisdom and jokes from your answers, once, at hatch time. Everything runs on your PC: your answers are never sent to a cloud service.
 
-## Setup
+## Install DOST as an app (Windows)
+
+DOST can be packaged as an ordinary Windows installer with Start Menu and desktop shortcuts and an uninstaller.
+
+1. Build the installer from the project folder (needs Node.js, see below):
+
+   ```powershell
+   npm install
+   npm run dist
+   ```
+
+   This creates `dist\DOST-Setup-0.1.0.exe`.
+2. Run `DOST-Setup-0.1.0.exe` and follow the steps. It installs for your user only, so no administrator rights are needed.
+3. The installer is not code-signed, so Windows SmartScreen may say it "protected your PC". Choose **More info**, then **Run anyway**.
+4. Start **DOST** from the Start Menu or desktop. To use DOST's personal messages, also do step 2 below (Ollama).
+
+The installed app uses normal timing. For the short demo timing, run the installed `DOST.exe` with `--demo` (for example, copy the desktop shortcut and add ` --demo` to the end of its **Target** field). Uninstall it from **Settings** → **Apps** → **Installed apps**.
+
+## Run from source
 
 ### 1. Install Node.js
 

@@ -30,6 +30,8 @@ let isPersistingQuit = false;
 const isDeveloperMode = process.argv.includes('--dev');
 const isDemo = isDeveloperMode || process.argv.includes('--demo');
 const resetGuestOnLaunch = process.argv.includes('--reset-guest');
+// An installed build must share its Start Menu shortcut's app ID, or Windows hides its notifications.
+if (process.platform === 'win32' && app.isPackaged) app.setAppUserModelId('com.aleen357.dost');
 const incubationWaitMs = isDemo ? 30_000 : 24 * 60 * 60 * 1000;
 const reminderIntervalMs = isDemo ? 2 * 60 * 1000 : 2 * 60 * 60 * 1000;
 const lightIntervalMs = isDemo ? 50_000 : 50 * 60 * 1000;

@@ -38,6 +38,7 @@ PRD refs: `prd.md > The Core Journey`, `Guest incubation and answers`, `Persona 
 - **Runtime:** a locally installed Windows desktop application; no website hosting or deployment is needed for the demo recording.
 - **Requirements:** Windows 10 or later, Node.js LTS, npm, and an optional Ollama installation with the model downloaded. Prepared local messages work if Ollama or the model is unavailable. Windows **Animation effects** must be on to see DOST move.
 - **Start the app:** from the project folder, run `npm install`, then `npm start` in PowerShell.
+- **Install it as an app:** `npm run dist` packages DOST with electron-builder into `distDOST-Setup-0.1.0.exe`, a per-user NSIS installer with Start Menu and desktop shortcuts and an uninstaller. It is not code-signed, so SmartScreen shows a warning. The packaged app sets its Windows app ID (`com.aleen357.dost`) so its notifications appear.
 - **Run the demo cadence:** `npm run start:demo`. Demo mode shortens the two incubation waits to 30 seconds each, the habit interval to two minutes, the light interval to 50 seconds and the light mute to five minutes, while hiding developer-only controls. Sleep still lasts five hours. Use `npm run start:dev` for the same timing with developer controls visible, or `npm start` for normal intervals.
 - **Local model setup (README):** install Ollama for Windows (or `winget install Ollama.Ollama`), then `ollama pull qwen3.5:4b`, and check with `ollama list`. No API key is needed. The model download requires internet once; generation after setup runs locally and takes one to two minutes.
 - **Recording:** show the three short incubation sessions, Let's Go with the rainbow brew, the hatch, Feed and Sleep, then leave the app in the tray while working in another app until the demo reminder appears. For a shorter developer check, use **Show reminder now** in the developer-mode tray menu.
@@ -140,7 +141,7 @@ Data flow: UI answer → preload bridge → main process validates, scores, and 
 
 ```text
 DOST/
-├── package.json                 # scripts (start, start:demo, start:dev) and Electron dependency
+├── package.json                 # scripts (start, start:demo, start:dev, dist) and installer config
 ├── package-lock.json            # reproducible dependency tree
 ├── .gitignore                   # excludes .env, learner profile, build output and local notes
 ├── LICENSE                      # MIT
