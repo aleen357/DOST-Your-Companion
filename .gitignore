@@ -17,5 +17,6 @@
 # Local handoff notes
 /CARRY-ON.md
 
-# Demo-recording media (raw takes, clips, screenshots); the final video goes on YouTube
+# Demo media (raw takes, clips, gallery screenshots); these go on YouTube and Devpost, not in git
 /devpost/video/
+/devpost/screenshots/
