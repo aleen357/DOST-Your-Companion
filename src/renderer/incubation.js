@@ -1,6 +1,8 @@
 const byId = (id) => document.getElementById(id);
 const previewButton = byId('preview-button');
 const connectButton = byId('connect-button');
+// A little pixel heart, drawn like the candies in the background.
+const CONNECT_ICON = '<svg class="connect-icon" viewBox="0 0 9 8" shape-rendering="crispEdges" aria-hidden="true"><path fill="#5a3a9e" d="M1 0h2v1h-2zM6 0h2v1h-2zM0 1h1v1h-1zM3 1h1v1h-1zM5 1h1v1h-1zM8 1h1v1h-1zM0 2h1v1h-1zM4 2h1v1h-1zM8 2h1v1h-1zM0 3h1v1h-1zM8 3h1v1h-1zM1 4h1v1h-1zM7 4h1v1h-1zM2 5h1v1h-1zM6 5h1v1h-1zM3 6h1v1h-1zM5 6h1v1h-1zM4 7h1v1h-1z"/><path fill="#ff8fc4" d="M2 1h1v1h-1zM6 1h2v1h-2zM1 2h3v1h-3zM5 2h3v1h-3zM1 3h7v1h-7zM2 4h5v1h-5zM3 5h3v1h-3zM4 6h1v1h-1z"/><path fill="#fff" d="M1 1h1v1h-1z"/></svg>';
 const resetButton = byId('reset-button');
 const goButton = byId('go-button');
 const helloButton = byId('hello-button');
@@ -186,7 +188,7 @@ function render() {
       connectButton.textContent = `Next session in ${formatWait(state.waitRemainingMs)}`;
     } else if (!state.hatched) {
       connectButton.disabled = !state.canConnect;
-      connectButton.innerHTML = state.sessionIndex === 0 ? 'Connect <span aria-hidden="true">↗</span>' : 'Connect again <span aria-hidden="true">↗</span>';
+      connectButton.innerHTML = `${state.sessionIndex === 0 ? 'Connect' : 'Connect again'} ${CONNECT_ICON}`;
     }
   } else {
     connectButton.hidden = true;

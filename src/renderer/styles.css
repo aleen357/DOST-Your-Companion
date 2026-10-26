@@ -81,6 +81,12 @@ h1 { margin: 0; color: #3b2766; font: 800 34px/1.08 'Baloo 2', sans-serif; lette
 .primary-button span { color: #ffc6e0; }
 .primary-button:hover { background: #7651d0; }
 .primary-button:active { box-shadow: 0 1px 0 #4b2f93, 0 3px 8px #3a1f7a33; transform: translateY(3px); }
+/* Connect: a pixel heart, and a rainbow that flows across the button on hover. */
+.connect-icon { width: 18px; height: 16px; image-rendering: pixelated; transition: transform .2s ease; }
+#connect-button:hover:not(:disabled) { background: linear-gradient(90deg, #ff9aa2, #ffc27a, #ffe57a, #9be7a0, #8fd3ff, #b39dff, #ff9aa2) 0 0 / 200% 100%; color: #3b2766; animation: rainbow-slide 1.6s linear infinite; }
+#connect-button:hover:not(:disabled) .connect-icon { animation: heart-bounce .6s ease-in-out infinite alternate; }
+@keyframes rainbow-slide { to { background-position: 200% 0; } }
+@keyframes heart-bounce { from { transform: translateY(0) scale(1); } to { transform: translateY(-2px) scale(1.15); } }
 .primary-button:focus-visible,.okay-button:focus-visible,.close-button:focus-visible { outline: 3px solid #b79cf2; outline-offset: 3px; }
 .prototype-note { margin: 14px 0 0; color: #a99cc4; font-size: 12px; }
 .page-footer { display: flex; justify-content: center; gap: 8px; color: #96a5ba; font-size: 12px; }.footer-heart { color: #80c8a9; }
